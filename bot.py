@@ -1,12 +1,14 @@
 from os import getenv
 
 from pyrogram import Client, filters
+from pyrogram.types import Message
 
-app = Client("QuoteBot", bot_token=getenv("BOT_TOKEN"), api_hash=getenv("USER_HASH"), api_id=int(getenv("USER_ID")))
+app = Client("QuoteBot", api_hash=getenv("USER_HASH"), api_id=int(getenv("USER_ID")))
+history = {}
 
 
 @app.on_message(filters.command(["start"]))
-async def command_start(_, message) -> None:
+async def command_start(_, message: Message) -> None:
     await message.reply("1. Forward messages to private chat with bot.\n"
                         "2. Reply '/quote' command on first message.\n"
                         "3. ???\n"
@@ -14,12 +16,25 @@ async def command_start(_, message) -> None:
 
 
 @app.on_message(filters.command(["quote"]))
-async def command_quote(client, message) -> None:
+async def command_quote(client, message: Message) -> None:
     if not message.reply_to_message:
         await command_start(client, message)
         return
 
-    await message.reply('/quote')
+    for m in [v for k, v in history[message.chat.id].items() if k >= message.reply_to_message_id]:
+        print(m)
+
+    history[message.chat.id].clear()
+
+
+@app.on_message()
+async def regular_message(_, message: Message) -> None:
+    try:
+        _ = history[message.chat.id]
+    except:
+        history[message.chat.id] = {}
+
+    history[message.chat.id][message.id] = message.text
 
 
 def main() -> None:
