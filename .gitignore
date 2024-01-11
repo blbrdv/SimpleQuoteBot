@@ -161,3 +161,7 @@ cython_debug/
 
 # debug image output
 test.jpg
+
+# telegram
+*.session
+*.session-journal
