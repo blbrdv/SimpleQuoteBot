@@ -21,8 +21,14 @@ async def command_quote(client, message: Message) -> None:
         await command_start(client, message)
         return
 
-    for m in [v for k, v in history[message.chat.id].items() if k >= message.reply_to_message_id]:
-        print(m)
+    messages = [v for k, v in history[message.chat.id].items() if k >= message.reply_to_message_id]
+
+    if not messages:
+        await message.reply("Something went wrong. Try again later.")
+        return
+
+    for msg in messages:
+        print(msg)
 
     history[message.chat.id].clear()
 
