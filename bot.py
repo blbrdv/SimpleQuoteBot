@@ -9,10 +9,12 @@ history = {}
 
 @app.on_message(filters.command(["start"]))
 async def command_start(_, message: Message) -> None:
-    await message.reply("1. Forward messages to private chat with bot.\n"
-                        "2. Reply '/quote' command on first message.\n"
-                        "3. ???\n"
-                        "4. Profit!\n")
+    await message.reply(
+        "1. Forward messages to private chat with bot.\n"
+        "2. Reply '/quote' command on first message.\n"
+        "3. ???\n"
+        "4. Profit!\n"
+    )
 
 
 @app.on_message(filters.command(["quote"]))
@@ -21,7 +23,11 @@ async def command_quote(client, message: Message) -> None:
         await command_start(client, message)
         return
 
-    messages = [v for k, v in history[message.chat.id].items() if k >= message.reply_to_message_id]
+    messages = [
+        value
+        for key, value in history[message.chat.id].items()
+        if key >= message.reply_to_message_id
+    ]
 
     if not messages:
         await message.reply("Something went wrong. Try again later.")
