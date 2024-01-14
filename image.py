@@ -9,7 +9,7 @@ def draw(name: str):
 
     canvas.paste(bg)
 
-    d = ImageDraw.Draw(image)
+    d = ImageDraw.Draw(canvas)
     d.rounded_rectangle(
         (10, 10, 50, 50), radius=5, fill="#202123", corners=(True, True, True, False)
     )
