@@ -33,7 +33,7 @@ async def command_quote(client, message: Message) -> None:
         return
 
     messages = [
-        value
+        value.text
         for key, value in history[message.chat.id].items()
         if key >= message.reply_to_message_id
     ]
@@ -46,7 +46,7 @@ async def command_quote(client, message: Message) -> None:
     file_name = f"{message.chat.id}.png"
 
     try:
-        draw(file_name)
+        draw(messages, file_name)
         await message.reply_photo(file_name)
 
         os.remove(file_name)
@@ -62,7 +62,7 @@ async def regular_message(_, message: Message) -> None:
     except:
         history[message.chat.id] = {}
 
-    history[message.chat.id][message.id] = message.text
+    history[message.chat.id][message.id] = message
 
 
 def main() -> None:
