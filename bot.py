@@ -27,12 +27,18 @@ async def command_quote(client, message: Message) -> None:
         await command_start(client, message)
         return
 
+    # not supposed to happen
+    if not history:
+        await message.reply("Something went wrong. Try again later.")
+        return
+
     messages = [
         value
         for key, value in history[message.chat.id].items()
         if key >= message.reply_to_message_id
     ]
 
+    # not supposed to happen
     if not messages:
         await message.reply("Something went wrong. Try again later.")
         return
