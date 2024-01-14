@@ -1,4 +1,5 @@
 import os
+import traceback
 from os import getenv
 
 from pyrogram import Client, filters
@@ -38,11 +39,14 @@ async def command_quote(client, message: Message) -> None:
 
     file_name = f"{message.chat.id}.png"
 
-    draw(file_name)
-    await message.reply_photo(file_name)
+    try:
+        draw(file_name)
+        await message.reply_photo(file_name)
 
-    os.remove(file_name)
-    history[message.chat.id].clear()
+        os.remove(file_name)
+        history[message.chat.id].clear()
+    except:
+        await message.reply(traceback.format_exc())
 
 
 @app.on_message()
