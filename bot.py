@@ -1,7 +1,10 @@
+import os
 from os import getenv
 
 from pyrogram import Client, filters
 from pyrogram.types import Message
+
+from image import draw
 
 app = Client("QuoteBot", api_hash=getenv("USER_HASH"), api_id=int(getenv("USER_ID")))
 history = {}
@@ -33,9 +36,12 @@ async def command_quote(client, message: Message) -> None:
         await message.reply("Something went wrong. Try again later.")
         return
 
-    for msg in messages:
-        print(msg)
+    file_name = f"{message.chat.id}.png"
 
+    draw(file_name)
+    await message.reply_photo(file_name)
+
+    os.remove(file_name)
     history[message.chat.id].clear()
 
 
