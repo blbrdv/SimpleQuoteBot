@@ -7,7 +7,7 @@ from pyrogram.types import Message
 
 from image import draw
 
-app = Client("QuoteBot", api_hash=getenv("USER_HASH"), api_id=int(getenv("USER_ID")))
+app = Client("QuoteBot", bot_token=getenv("BOT_TOKEN"))
 history = {}
 
 
@@ -29,7 +29,7 @@ async def command_quote(client, message: Message) -> None:
 
     # not supposed to happen
     if not history:
-        await message.reply("Something went wrong. Try again later.")
+        await command_start(client, message)
         return
 
     messages = [
