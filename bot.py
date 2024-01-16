@@ -1,5 +1,6 @@
 import os
 import traceback
+import sys
 from os import getenv
 
 from pyrogram import Client, filters
@@ -52,7 +53,10 @@ async def _on_quote(client, message: Message) -> None:
         os.remove(file_name)
         history[message.chat.id].clear()
     except:
-        await message.reply(traceback.format_exc())
+        if getenv("DEBUG"):
+            await message.reply(traceback.format_exc())
+        else:
+            print(traceback.format_exc(), file=sys.stderr)
 
 
 @app.on_message()
