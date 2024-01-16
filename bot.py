@@ -12,7 +12,7 @@ history = {}
 
 
 @app.on_message(filters.command(["start"]))
-async def command_start(_, message: Message) -> None:
+async def _on_start(_, message: Message) -> None:
     await message.reply(
         "1. Forward messages to private chat with bot.\n"
         "2. Reply '/quote' command on first message.\n"
@@ -22,14 +22,14 @@ async def command_start(_, message: Message) -> None:
 
 
 @app.on_message(filters.command(["quote"]))
-async def command_quote(client, message: Message) -> None:
+async def _on_quote(client, message: Message) -> None:
     if not message.reply_to_message:
-        await command_start(client, message)
+        await _on_start(client, message)
         return
 
     # not supposed to happen
     if not history:
-        await command_start(client, message)
+        await _on_start(client, message)
         return
 
     messages = [
@@ -56,7 +56,7 @@ async def command_quote(client, message: Message) -> None:
 
 
 @app.on_message()
-async def regular_message(_, message: Message) -> None:
+async def _on_message(_, message: Message) -> None:
     try:
         _ = history[message.chat.id]
     except:
