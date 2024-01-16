@@ -62,7 +62,13 @@ async def _on_message(_, message: Message) -> None:
     except:
         history[message.chat.id] = {}
 
-    history[message.chat.id][message.id] = message
+    # temporary hack for saving memory
+    # TODO: remove when better hosting
+    if len(history[message.chat.id]) >= 50:
+        await message.reply("Too big request. Try to split your messages.")
+        history[message.chat.id] = {}
+    else:
+        history[message.chat.id][message.id] = message
 
 
 def main() -> None:
