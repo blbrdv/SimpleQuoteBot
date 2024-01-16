@@ -29,7 +29,11 @@ def draw(messages: list[str], name: str) -> None:
 
     message_image_y = PADDING
     for message in messages:
-        message_image = _draw_message(message, (canvas_width + TOTAL_PADDING, canvas_height + TOTAL_PADDING), message_image_y)
+        message_image = _draw_message(
+            message,
+            (canvas_width + TOTAL_PADDING, canvas_height + TOTAL_PADDING),
+            message_image_y,
+        )
 
         canvas = Image.alpha_composite(canvas, message_image)
 
