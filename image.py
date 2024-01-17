@@ -3,7 +3,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 TEXT_FONT = ImageFont.truetype("font.ttf", 14)
 MAX_CANVAS_WIDTH = 512
-MARGIN = 10
+MARGIN = 5
 TOTAL_MARGIN = MARGIN * 2
 
 
