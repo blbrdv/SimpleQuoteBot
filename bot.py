@@ -3,13 +3,14 @@ import logging
 import os
 import traceback
 import sys
-from datetime import timezone
 from os import getenv
 
 from aiogram import Dispatcher, Bot, types
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart, Command
-from aiogram.types import BotCommand, Message, InputFile, FSInputFile
+from aiogram.types import BotCommand, Message, FSInputFile
+from Message import Message as Msg
+from Speech import Speech
 
 from image import draw
 
@@ -39,21 +40,38 @@ async def _on_quote(message: Message) -> None:
         await _on_start(message)
         return
 
-    messages = []
+    data = []
+    last_user_id = 0
     for key, message in history[message.chat.id].items():
-        if key >= reply.message_id:
-            time = message.date.replace(tzinfo=timezone.utc).strftime("%H:%M")
-            messages.append((message.md_text, time))
+        if key < reply.message_id:
+            continue
+
+        if last_user_id == message.from_user.id:
+            data[-1].messages.append(Msg(message.md_text, message.date))
+        else:
+            data.append(
+                Speech(
+                    message.from_user.full_name,
+                    "",
+                    [Msg(message.md_text, message.date)],
+                )
+            )
+
+    messages_empty = False
+    for speech in data:
+        if not speech.messages:
+            messages_empty = True
+            break
 
     # not supposed to happen
-    if not messages:
+    if not data or messages_empty:
         await message.reply("Something went wrong. Try again later.")
         return
 
     file_name = f"{message.chat.id}.png"
 
     try:
-        draw(messages, file_name)
+        draw(data, file_name)
         await message.reply_photo(FSInputFile(file_name))
 
         os.remove(file_name)
@@ -84,7 +102,7 @@ async def _on_message(message: types.Message) -> None:
 async def _start_bot() -> None:
     bot = Bot(getenv("BOT_TOKEN"), parse_mode=ParseMode.MARKDOWN)
 
-    print('(Press Ctrl+C to stop this)')
+    print("(Press Ctrl+C to stop this)")
     await dispatcher.start_polling(bot)
 
 
