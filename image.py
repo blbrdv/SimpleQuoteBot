@@ -2,6 +2,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 
 TEXT_FONT = ImageFont.truetype("font.ttf", 14)
+TIME_FONT = ImageFont.truetype("font.ttf", 10)
 MAX_CANVAS_WIDTH = 512
 MARGIN = 5
 TOTAL_MARGIN = MARGIN * 2
@@ -41,24 +42,27 @@ def draw(messages: list[tuple[str, str]], name: str) -> None:
 
 
 def _draw_message(text: str, time: str, size: tuple[int, int], y: int) -> Image:
-    (text_width, text_height) = _message_size(text, time)
+    (block_width, block_height) = _message_size(text, time)
+    (text_width, _) = _text_size(text, TEXT_FONT)
+
     canvas = Image.new("RGBA", (size[0], size[1]), (0, 0, 0, 0))
 
     d = ImageDraw.Draw(canvas)
     d.rounded_rectangle(
-        (MARGIN, y, text_width, y + text_height),
+        (MARGIN, y, block_width, y + block_height),
         radius=5,
         fill="#202123",
         corners=(True, True, True, False),
     )
     d.text((TOTAL_MARGIN, y + MARGIN), text, fill="white", font=TEXT_FONT)
+    d.text((text_width + TOTAL_MARGIN + MARGIN, y + int(block_height / 2)), time, fill="grey", font=TIME_FONT)
 
     return canvas
 
 
 def _message_size(text: str, time: str) -> tuple[int, int]:
-    (text_width, text_height) = _text_size(text)
-    (datetime_width, datetime_height) = _text_size(time)
+    (text_width, text_height) = _text_size(text, TEXT_FONT)
+    (datetime_width, datetime_height) = _text_size(time, TIME_FONT)
 
     return (
         text_width + datetime_width + TOTAL_MARGIN + TOTAL_MARGIN,
@@ -67,10 +71,10 @@ def _message_size(text: str, time: str) -> tuple[int, int]:
 
 
 # https://stackoverflow.com/a/77749307/23112474
-def _text_size(text):
+def _text_size(text, font):
     image = Image.new(mode="P", size=(0, 0))
     d = ImageDraw.Draw(image)
-    _, _, width, height = d.textbbox((0, 0), text=text, font=TEXT_FONT)
+    _, _, width, height = d.textbbox((0, 0), text=text, font=font)
     return width, height
 
 
