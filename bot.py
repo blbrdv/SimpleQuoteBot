@@ -1,6 +1,7 @@
 import os
 import traceback
 import sys
+from datetime import datetime
 from os import getenv
 
 from pyrogram import Client, filters
@@ -33,11 +34,11 @@ async def _on_quote(client, message: Message) -> None:
         await _on_start(client, message)
         return
 
-    messages = [
-        value.text
-        for key, value in history[message.chat.id].items()
-        if key >= message.reply_to_message_id
-    ]
+    messages = []
+    for key, (text, date) in history[message.chat.id].items():
+        if key >= message.reply_to_message_id:
+            time = date.astimezone(datetime.UTC).strftime("%H:%M")
+            messages.append((text, time))
 
     # not supposed to happen
     if not messages:
