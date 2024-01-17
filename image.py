@@ -46,10 +46,8 @@ def _draw_message(text: str, size: tuple[int, int], y: int) -> Image:
     canvas = Image.new("RGBA", (size[0], size[1]), (0, 0, 0, 0))
 
     d = ImageDraw.Draw(canvas)
-    deb = (MARGIN, y, text_width, y + text_height)
-    print(deb)
     d.rounded_rectangle(
-        deb,
+        (MARGIN, y, text_width, y + text_height),
         radius=5,
         fill="#202123",
         corners=(True, True, True, False),
