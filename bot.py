@@ -29,20 +29,20 @@ async def _on_start(message: Message) -> None:
 
 
 @dispatcher.message(Command(BotCommand(command="quote", description="Create quote")))
-async def _on_quote(message: Message) -> None:
-    reply = message.reply_to_message  # storing it b/c aiogram is retarded
+async def _on_quote(incoming_message: Message) -> None:
+    reply = incoming_message.reply_to_message  # storing it b/c aiogram is retarded
     if not reply:
-        await _on_start(message)
+        await _on_start(incoming_message)
         return
 
     # not supposed to happen
     if not history:
-        await _on_start(message)
+        await _on_start(incoming_message)
         return
 
     data = []
     last_user_id = 0
-    for key, message in history[message.chat.id].items():
+    for key, message in history[incoming_message.chat.id].items():
         if key < reply.message_id:
             continue
 
@@ -65,20 +65,20 @@ async def _on_quote(message: Message) -> None:
 
     # not supposed to happen
     if not data or messages_empty:
-        await message.reply("Something went wrong. Try again later.")
+        await incoming_message.reply("Something went wrong. Try again later.")
         return
 
-    file_name = f"{message.chat.id}.png"
+    file_name = f"{incoming_message.chat.id}.png"
 
     try:
         draw(data, file_name)
-        await message.reply_photo(FSInputFile(file_name))
+        await incoming_message.reply_photo(FSInputFile(file_name))
 
         os.remove(file_name)
-        history[message.chat.id].clear()
+        history[incoming_message.chat.id].clear()
     except:
         if getenv("DEBUG"):
-            await message.reply(traceback.format_exc())
+            await incoming_message.reply(traceback.format_exc())
         else:
             print(traceback.format_exc(), file=sys.stderr)
 
