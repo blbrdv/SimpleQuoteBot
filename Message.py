@@ -1,14 +1,26 @@
-from datetime import timezone
+from typing import Optional
 
-from aiogram.types import DateTime
+from Author import Author
 
 
 class Message:
     """Single message record"""
 
-    def __init__(self, text: str, datetime: DateTime):
+    def __init__(
+        self, text: str, *, last: bool = False, author: Optional[Author] = None
+    ):
         self.text = text
-        self.time = datetime.replace(tzinfo=timezone.utc).strftime("%H:%M")
+        self.last = last
+        self.author = author
 
     text: str
-    time: str
+    last: bool
+    author: Optional[Author]
+
+    @property
+    def is_first(self) -> bool:
+        return bool(self.author)
+
+    @property
+    def is_last(self) -> bool:
+        return self.last

@@ -9,6 +9,8 @@ from aiogram import Dispatcher, Bot, types
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart, Command
 from aiogram.types import BotCommand, Message, FSInputFile
+
+from Author import Author
 from Message import Message as Msg
 from Speech import Speech
 
@@ -56,17 +58,20 @@ async def _on_quote(incoming_message: Message) -> None:
             user_name = message.from_user.full_name
 
         if last_user_id == user_id:
-            data[-1].messages.append(Msg(message.md_text, message.date))
+            data[-1].messages.append(Msg(message.md_text))
         else:
+            if len(data) > 0 and data[-1]:
+                data[-1].messages[-1].last = True
+
             data.append(
                 Speech(
-                    user_name,
-                    "",
-                    [Msg(message.md_text, message.date)],
+                    [Msg(message.md_text, author=Author(user_id, user_name))],
                 )
             )
 
         last_user_id = user_id
+
+    data[-1].messages[-1].last = True
 
     messages_empty = False
     for speech in data:

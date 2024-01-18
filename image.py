@@ -1,10 +1,13 @@
 from PIL import Image, ImageDraw, ImageFont
 
+from ColorScheme import ColorScheme
 from Message import Message
+from RGB import RGB
 from Size import Size
 from Speech import Speech
 
-TEXT_FONT = ImageFont.truetype("font.ttf", 14)
+TEXT_FONT_SIZE = 14
+TEXT_FONT = ImageFont.truetype("font.ttf", TEXT_FONT_SIZE)
 MAX_CANVAS_WIDTH = 512
 MARGIN = 5
 TOTAL_MARGIN = MARGIN * 2
@@ -44,29 +47,19 @@ def draw(data: list[Speech], name: str) -> None:
 def _draw_speech(speech: Speech, canvas_size: Size, speech_image_y: int) -> Image:
     canvas = Image.new("RGBA", (canvas_size.width, canvas_size.height), (0, 0, 0, 0))
 
-    count = 1
     message_image_y = TOTAL_MARGIN + speech_image_y
     for message in speech.messages:
-        message_image = _draw_message(
-            message,
-            canvas_size,
-            message_image_y,
-            count == len(speech.messages),
-        )
+        message_image = _draw_message(message, canvas_size, message_image_y)
 
         canvas = Image.alpha_composite(canvas, message_image)
 
         message_size = _message_size(message)
         message_image_y += message_size.height + TOTAL_MARGIN
 
-        count += 1
-
     return canvas
 
 
-def _draw_message(
-    message: Message, canvas_size: Size, y: int, last: bool = False
-) -> Image:
+def _draw_message(message: Message, canvas_size: Size, y: int) -> Image:
     message_size = _message_size(message)
 
     canvas = Image.new("RGBA", (canvas_size.width, canvas_size.height), (0, 0, 0, 0))
@@ -77,9 +70,9 @@ def _draw_message(
         (MARGIN + 50, y, message_size.width + 50, y + message_size.height),
         radius=5,
         fill="#202123",
-        corners=(True, True, True, not last),
+        corners=(True, True, True, not message.is_last),
     )
-    if last:
+    if message.is_last:
         d.polygon(
             [
                 (MARGIN + 50, y + message_size.height),
@@ -89,7 +82,16 @@ def _draw_message(
             fill="#202123",
         )
 
-    d.text((TOTAL_MARGIN + 50, y + MARGIN), message.text, fill="white", font=TEXT_FONT)
+    text_y = y + MARGIN
+    if message.is_first:
+        d.text(
+            (TOTAL_MARGIN + 50, y + MARGIN),
+            message.author.full_name,
+            fill=_get_color(message.author.user_id).primary.value,
+            font=TEXT_FONT,
+        )
+        text_y += TEXT_FONT_SIZE + MARGIN
+    d.text((TOTAL_MARGIN + 50, text_y), message.text, fill="white", font=TEXT_FONT)
 
     return canvas
 
@@ -111,10 +113,18 @@ def _speech_size(speech: Speech) -> Size:
 def _message_size(message: Message) -> Size:
     text_size = _text_size(message.text, TEXT_FONT)
 
-    return Size(
-        text_size.width + TOTAL_MARGIN + TOTAL_MARGIN,
-        text_size.height + TOTAL_MARGIN,
-    )
+    width = text_size.width + TOTAL_MARGIN + TOTAL_MARGIN
+    height = text_size.height + TOTAL_MARGIN
+
+    if message.is_first:
+        user_name_size = _text_size(message.author.full_name, TEXT_FONT)
+        user_name_width = user_name_size.width + TOTAL_MARGIN + TOTAL_MARGIN
+
+        if user_name_width > width:
+            width = user_name_width
+        height += user_name_size.height + TOTAL_MARGIN
+
+    return Size(width, height)
 
 
 # https://stackoverflow.com/a/77749307/23112474
@@ -122,18 +132,18 @@ def _text_size(text, font) -> Size:
     image = Image.new(mode="P", size=(0, 0))
     d = ImageDraw.Draw(image)
     _, _, width, height = d.textbbox((0, 0), text=text, font=font)
-    return Size(width, height)
+    return Size(width, TEXT_FONT_SIZE)
 
 
-def _get_color(user_id: int) -> tuple[str, str]:
+def _get_color(user_id: int) -> ColorScheme:
     colors = [
-        ("#FF885E", "#FF516A"),
-        ("#FFCD6A", "#FFA85C"),
-        ("#E0A2F3", "#D669ED"),
-        ("#A0DE7E", "#54CB68"),
-        ("#53EDD6", "#28C9B7"),
-        ("#72D5FD", "#2A9EF1"),
-        ("#FFA8A8", "#FF719A"),
+        ColorScheme(RGB(255, 81, 106),  RGB(255, 136, 94)),
+        ColorScheme(RGB(255, 168, 92),  RGB(255, 205, 106)),
+        ColorScheme(RGB(214, 105, 237), RGB(224, 162, 243)),
+        ColorScheme(RGB(84, 203, 104),  RGB(160, 222, 126)),
+        ColorScheme(RGB(40, 201, 183),  RGB(83, 237, 214)),
+        ColorScheme(RGB(42, 158, 241),  RGB(114, 213, 253)),
+        ColorScheme(RGB(255, 113, 154), RGB(255, 168, 168)),
     ]
 
     return colors[abs(user_id) % 7]
