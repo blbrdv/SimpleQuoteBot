@@ -4,7 +4,6 @@ from Message import Message
 from Speech import Speech
 
 TEXT_FONT = ImageFont.truetype("font.ttf", 14)
-TIME_FONT = ImageFont.truetype("font.ttf", 10)
 MAX_CANVAS_WIDTH = 512
 MARGIN = 5
 TOTAL_MARGIN = MARGIN * 2
@@ -84,12 +83,6 @@ def _draw_message(
     #     d.polygon([(20, 10), (200, 200), (100, 20)], fill=(255, 0, 0))
 
     d.text((TOTAL_MARGIN, y + MARGIN), message.text, fill="white", font=TEXT_FONT)
-    d.text(
-        (text_width + TOTAL_MARGIN + MARGIN, y + int(block_height / 2)),
-        message.time,
-        fill="grey",
-        font=TIME_FONT,
-    )
 
     return canvas
 
@@ -110,11 +103,10 @@ def _speech_size(speech: Speech) -> tuple[int, int]:
 
 def _message_size(message: Message) -> tuple[int, int]:
     (text_width, text_height) = _text_size(message.text, TEXT_FONT)
-    (datetime_width, datetime_height) = _text_size(message.time, TIME_FONT)
 
     return (
-        text_width + datetime_width + TOTAL_MARGIN + TOTAL_MARGIN,
-        text_height + TOTAL_MARGIN + int((datetime_height / 2)),
+        text_width + TOTAL_MARGIN + TOTAL_MARGIN,
+        text_height + TOTAL_MARGIN,
     )
 
 
