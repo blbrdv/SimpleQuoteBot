@@ -39,13 +39,13 @@ def draw(data: list[Speech], name: str) -> None:
     canvas.save(name)
 
 
-def _draw_speech(speech: Speech, canvas_size: tuple[int, int], y: int) -> Image:
+def _draw_speech(speech: Speech, canvas_size: tuple[int, int], speech_image_y: int) -> Image:
     _, height = _speech_size(speech)
 
     canvas = Image.new("RGBA", (canvas_size[0], canvas_size[1]), (0, 0, 0, 0))
 
     count = 1
-    message_image_y = height + y
+    message_image_y = TOTAL_MARGIN + speech_image_y
     for message in speech.messages:
         message_image = _draw_message(
             message,
