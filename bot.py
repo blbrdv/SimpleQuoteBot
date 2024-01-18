@@ -57,6 +57,8 @@ async def _on_quote(incoming_message: Message) -> None:
                 )
             )
 
+        last_user_id = message.from_user.id
+
     messages_empty = False
     for speech in data:
         if not speech.messages:
