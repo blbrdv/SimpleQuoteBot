@@ -124,6 +124,20 @@ def _text_size(text, font) -> Size:
     return Size(width, height)
 
 
+def _get_color(user_id: int) -> tuple[str, str]:
+    colors = [
+        ("#FF885E", "#FF516A"),
+        ("#FFCD6A", "#FFA85C"),
+        ("#E0A2F3", "#D669ED"),
+        ("#A0DE7E", "#54CB68"),
+        ("#53EDD6", "#28C9B7"),
+        ("#72D5FD", "#2A9EF1"),
+        ("#FFA8A8", "#FF719A"),
+    ]
+
+    return colors[abs(user_id) % 7]
+
+
 # def _break_fix(text, width, font, draw):
 #     if not text:
 #         return
