@@ -40,9 +40,7 @@ def draw(data: list[Speech], name: str) -> None:
     canvas.save(name)
 
 
-def _draw_speech(
-    speech: Speech, canvas_size: Size, speech_image_y: int
-) -> Image:
+def _draw_speech(speech: Speech, canvas_size: Size, speech_image_y: int) -> Image:
     canvas = Image.new("RGBA", (canvas_size.width, canvas_size.height), (0, 0, 0, 0))
 
     count = 1
@@ -75,15 +73,22 @@ def _draw_message(
     d = ImageDraw.Draw(canvas)
 
     d.rounded_rectangle(
-        (MARGIN, y, message_size.width, y + message_size.height),
+        (MARGIN + 50, y, message_size.width + 50, y + message_size.height),
         radius=5,
         fill="#202123",
         corners=(True, True, True, not last),
     )
-    # if last:
-    #     d.polygon([(20, 10), (200, 200), (100, 20)], fill=(255, 0, 0))
+    if last:
+        d.polygon(
+            [
+                (MARGIN + 50, y + message_size.height),
+                (MARGIN + 50, y + message_size.height - 8),
+                (MARGIN + 40, y + message_size.height),
+            ],
+            fill="#202123",
+        )
 
-    d.text((TOTAL_MARGIN, y + MARGIN), message.text, fill="white", font=TEXT_FONT)
+    d.text((TOTAL_MARGIN + 50, y + MARGIN), message.text, fill="white", font=TEXT_FONT)
 
     return canvas
 
