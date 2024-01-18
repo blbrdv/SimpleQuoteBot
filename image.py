@@ -28,7 +28,9 @@ def draw(data: list[Speech], name: str) -> None:
 
     speech_image_y = 0
     for speech in data:
-        speech_image = _draw_speech(speech, (canvas_width, canvas_height), speech_image_y)
+        speech_image = _draw_speech(
+            speech, (canvas_width, canvas_height), speech_image_y
+        )
 
         canvas = Image.alpha_composite(canvas, speech_image)
 
@@ -38,7 +40,9 @@ def draw(data: list[Speech], name: str) -> None:
     canvas.save(name)
 
 
-def _draw_speech(speech: Speech, canvas_size: tuple[int, int], speech_image_y: int) -> Image:
+def _draw_speech(
+    speech: Speech, canvas_size: tuple[int, int], speech_image_y: int
+) -> Image:
     _, height = _speech_size(speech)
 
     canvas = Image.new("RGBA", (canvas_size[0], canvas_size[1]), (0, 0, 0, 0))
