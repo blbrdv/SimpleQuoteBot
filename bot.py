@@ -46,18 +46,27 @@ async def _on_quote(incoming_message: Message) -> None:
         if key < reply.message_id:
             continue
 
-        if last_user_id == message.from_user.id:
+        user_id = 0
+        user_name = ""
+        if message.forward_from:
+            user_id = message.forward_origin.sender_user.id
+            user_name = message.forward_origin.sender_user.full_name
+        else:
+            user_id = message.from_user.id
+            user_name = message.from_user.full_name
+
+        if last_user_id == user_id:
             data[-1].messages.append(Msg(message.md_text, message.date))
         else:
             data.append(
                 Speech(
-                    message.from_user.full_name,
+                    user_name,
                     "",
                     [Msg(message.md_text, message.date)],
                 )
             )
 
-        last_user_id = message.from_user.id
+        last_user_id = user_id
 
     messages_empty = False
     for speech in data:
