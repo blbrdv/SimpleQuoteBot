@@ -29,13 +29,14 @@ def draw(data: list[Speech], name: str) -> None:
 
     speech_image_y = 0
     for speech in data:
+        speech_size = _speech_size(speech)
         speech_image = _draw_speech(
             speech, Size(canvas_width, canvas_height), speech_image_y
         )
 
         canvas = Image.alpha_composite(canvas, speech_image)
 
-        speech_image_y += speech_image_y
+        speech_image_y += speech_image_y + speech_size.height
 
     canvas.save(name)
 
