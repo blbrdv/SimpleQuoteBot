@@ -1,15 +1,17 @@
+from typing import Optional
+
+from Author import Author
 from Message import Message
 
 
 class Speech:
     """Multiple messages from one user in a row"""
 
-    # def __init__(self, author_name: str, author_avatar: str, messages: list[Message]):
-    def __init__(self, messages: list[Message]):
-        # self.author_name = author_name
-        # self.author_avatar = author_avatar
+    def __init__(self, author: Author, pfp: Optional[str], messages: list[Message]):
+        self.author = author
+        self.pfp = pfp
         self.messages = messages.copy()
 
-    # author_name: str
-    # author_avatar: str
+    author: Author
+    pfp: Optional[str]
     messages: list[Message]

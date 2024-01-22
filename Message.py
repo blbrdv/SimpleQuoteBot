@@ -1,5 +1,7 @@
 from typing import Optional
 
+import datetime as datetime
+
 from Author import Author
 
 
@@ -7,19 +9,26 @@ class Message:
     """Single message record"""
 
     def __init__(
-        self, text: str, *, last: bool = False, author: Optional[Author] = None
+        self,
+        text: str,
+        dt: datetime,
+        *,
+        last: bool = False,
+        header: Optional[str] = None
     ):
         self.text = text
+        self.time = dt.astimezone(datetime.timezone.utc).strftime("%H:%M")
         self.last = last
-        self.author = author
+        self.header = header
 
     text: str
+    time: str
     last: bool
-    author: Optional[Author]
+    header: Optional[str]
 
     @property
     def is_first(self) -> bool:
-        return bool(self.author)
+        return bool(self.header)
 
     @property
     def is_last(self) -> bool:
