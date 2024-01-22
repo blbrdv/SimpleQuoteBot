@@ -60,7 +60,9 @@ async def _on_quote(incoming_message: Message) -> None:
         if message.forward_origin:
             if message.forward_origin.type == MessageOriginType.HIDDEN_USER:
                 # hidden user doesn't provide id :^(
-                user_id = xxhash.xxh32_intdigest(message.forward_origin.sender_user_name)
+                user_id = xxhash.xxh32_intdigest(
+                    message.forward_origin.sender_user_name
+                )
                 name = message.forward_origin.sender_user_name.split()
                 firstname = name[0]
                 lastname = " ".join(name[1:])
