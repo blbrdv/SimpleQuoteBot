@@ -1,2 +1,3 @@
-Pillow==10.1
-pyrogram==2.0
+Pillow==10.2.0
+aiogram==3.3.0
+xxhash==3.4.1
