@@ -1,4 +1,6 @@
 # SimpleQuoteBot
+![GitHub milestone details](https://img.shields.io/github/milestones/progress/blbrdv/SimpleQuoteBot/1)
+
 A simple TG quote bot for generating quote screenshots from forwarded to private chat messages.
 
 ## Current limitations:
