@@ -1,4 +1,4 @@
-from RGB import RGB
+from .RGB import RGB
 
 
 class ColorScheme:

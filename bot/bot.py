@@ -13,11 +13,11 @@ from aiogram.types import BotCommand, Message, FSInputFile
 from aiogram.filters.command import Command
 from aiogram.enums.message_origin_type import MessageOriginType
 
-from Author import Author
-from Message import Message as Msg
-from Speech import Speech
+from .types.Author import Author
+from .types.Message import Message as Msg
+from .types.Speech import Speech
 
-from image import draw
+from .image import draw
 
 dispatcher = Dispatcher()
 bot = Bot(getenv("BOT_TOKEN"), parse_mode=ParseMode.MARKDOWN)

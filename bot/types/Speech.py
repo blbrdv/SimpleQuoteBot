@@ -1,7 +1,7 @@
 from typing import Optional
 
-from Author import Author
-from Message import Message
+from .Author import Author
+from .Message import Message
 
 
 class Speech:

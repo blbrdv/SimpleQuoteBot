@@ -1,18 +1,21 @@
+import os
+
 from PIL import Image, ImageDraw, ImageFont
 
-from ColorScheme import ColorScheme
-from Message import Message
-from Point import Point
-from RGB import RGB
-from Size import Size
-from Speech import Speech
+from .types.ColorScheme import ColorScheme
+from .types.Message import Message
+from .types.Point import Point
+from .types.RGB import RGB
+from .types.Size import Size
+from .types.Speech import Speech
 
 TEXT_FONT_SIZE = 20
 TIME_FONT_SIZE = 15
 INITIALS_FONT_SIZE = 32
-TEXT_FONT = ImageFont.truetype("font.ttf", TEXT_FONT_SIZE)
-TIME_FONT = ImageFont.truetype("font.ttf", TIME_FONT_SIZE)
-INITIALS_FONT = ImageFont.truetype("font.ttf", INITIALS_FONT_SIZE)
+FILES_PATH = f"{os.getcwd()}\\files"
+TEXT_FONT = ImageFont.truetype(f"{FILES_PATH}\\font.ttf", TEXT_FONT_SIZE)
+TIME_FONT = ImageFont.truetype(f"{FILES_PATH}\\font.ttf", TIME_FONT_SIZE)
+INITIALS_FONT = ImageFont.truetype(f"{FILES_PATH}\\font.ttf", INITIALS_FONT_SIZE)
 MAX_CANVAS_WIDTH = 512
 MARGIN = 10
 TOTAL_MARGIN = MARGIN * 2
@@ -31,7 +34,7 @@ def draw(data: list[Speech], name: str) -> None:
         if full_width > canvas_width:
             canvas_width = full_width
 
-    bg_raw = Image.open("bg.png").convert("RGBA")
+    bg_raw = Image.open(f"{FILES_PATH}\\bg.png").convert("RGBA")
     bg = bg_raw.resize((canvas_width, canvas_height))
     canvas = Image.new("RGBA", (canvas_width, canvas_height), (0, 0, 0))
     canvas.paste(bg)
@@ -200,7 +203,7 @@ def _generate_avatar(
         "RGBA", (canvas_size.width, canvas_size.height), (0, 0, 0, 0)
     )
     canvas_transparent = Image.new("RGBA", (size.width, size.height), (0, 0, 0, 0))
-    mask = Image.open("pfp_mask.png").convert("L")
+    mask = Image.open(f"{FILES_PATH}\\pfp_mask.png").convert("L")
     gradient = _generate_gradient(color, size).convert("RGBA")
 
     pfp = Image.composite(canvas_transparent, gradient, mask)
@@ -216,7 +219,6 @@ def _generate_avatar(
     )
 
     canvas_result.paste(pfp, (coordinates.X, coordinates.Y))
-    canvas_result.save("test2.png", format="png")
 
     return canvas_result
 

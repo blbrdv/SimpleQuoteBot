@@ -2,8 +2,6 @@ from typing import Optional
 
 import datetime as datetime
 
-from Author import Author
-
 
 class Message:
     """Single message record"""
