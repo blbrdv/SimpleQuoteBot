@@ -16,14 +16,14 @@ from .types.TextMode import TextMode
 TEXT_FONT_SIZE = 20
 TIME_FONT_SIZE = 15
 INITIALS_FONT_SIZE = 32
-FILES_PATH = f"{os.getcwd()}\\files"
-TEXT_REG_FONT = ImageFont.truetype(f"{FILES_PATH}\\font_regular.ttf", TEXT_FONT_SIZE)
-TEXT_IT_FONT = ImageFont.truetype(f"{FILES_PATH}\\font_italic.ttf", TEXT_FONT_SIZE)
-TEXT_BLD_FONT = ImageFont.truetype(f"{FILES_PATH}\\font_bold.ttf", TEXT_FONT_SIZE)
+FILES_PATH = f"{os.getcwd()}/files"
+TEXT_REG_FONT = ImageFont.truetype(f"{FILES_PATH}/font_regular.ttf", TEXT_FONT_SIZE)
+TEXT_IT_FONT = ImageFont.truetype(f"{FILES_PATH}/font_italic.ttf", TEXT_FONT_SIZE)
+TEXT_BLD_FONT = ImageFont.truetype(f"{FILES_PATH}/font_bold.ttf", TEXT_FONT_SIZE)
 TEXT_BLD_IT_FONT = ImageFont.truetype(
-    f"{FILES_PATH}\\font_bold_italic.ttf", TEXT_FONT_SIZE
+    f"{FILES_PATH}/font_bold_italic.ttf", TEXT_FONT_SIZE
 )
-TEXT_MONO_FONT = ImageFont.truetype(f"{FILES_PATH}\\font_mono.ttf", TEXT_FONT_SIZE)
+TEXT_MONO_FONT = ImageFont.truetype(f"{FILES_PATH}/font_mono.ttf", TEXT_FONT_SIZE)
 MARGIN = 12
 TOTAL_MARGIN = MARGIN * 2
 PFP_WIDTH = 75
@@ -41,7 +41,7 @@ def draw(data: list[Speech], name: str) -> None:
         if full_width > canvas_width:
             canvas_width = full_width
 
-    bg_raw = Image.open(f"{FILES_PATH}\\bg.png").convert("RGBA")
+    bg_raw = Image.open(f"{FILES_PATH}/bg.png").convert("RGBA")
     bg = bg_raw.resize((canvas_width, canvas_height))
     canvas = Image.new("RGBA", (canvas_width, canvas_height), (0, 0, 0))
     canvas.paste(bg)
@@ -215,7 +215,7 @@ def _generate_avatar(
         "RGBA", (canvas_size.width, canvas_size.height), (0, 0, 0, 0)
     )
     canvas_transparent = Image.new("RGBA", (size.width, size.height), (0, 0, 0, 0))
-    mask = Image.open(f"{FILES_PATH}\\pfp_mask.png").convert("L")
+    mask = Image.open(f"{FILES_PATH}/pfp_mask.png").convert("L")
     gradient = _generate_gradient(color, size).convert("RGBA")
 
     pfp = Image.composite(canvas_transparent, gradient, mask)
