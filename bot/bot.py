@@ -34,7 +34,7 @@ async def _on_start(message: Message) -> None:
     )
 
 
-@dispatcher.message(Command(BotCommand(command="quote", description="Create quote")))
+@dispatcher.message(Command(BotCommand(command="q", description="Create quote")))
 async def _on_quote(incoming_message: Message) -> None:
     reply = incoming_message.reply_to_message  # storing it b/c aiogram is retarded
     if not reply:
