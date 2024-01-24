@@ -1,4 +1,6 @@
 import os
+import textwrap
+from typing import Optional
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -8,15 +10,21 @@ from .types.Point import Point
 from .types.RGB import RGB
 from .types.Size import Size
 from .types.Speech import Speech
+from .types.TextMode import TextMode
 
 TEXT_FONT_SIZE = 20
 TIME_FONT_SIZE = 15
 INITIALS_FONT_SIZE = 32
 FILES_PATH = f"{os.getcwd()}\\files"
 TEXT_FONT = ImageFont.truetype(f"{FILES_PATH}\\font.ttf", TEXT_FONT_SIZE)
+TEXT_REG_FONT = ImageFont.truetype(f"{FILES_PATH}\\font_regular.ttf", TEXT_FONT_SIZE)
+TEXT_IT_FONT = ImageFont.truetype(f"{FILES_PATH}\\font_italic.ttf", TEXT_FONT_SIZE)
+TEXT_BLD_FONT = ImageFont.truetype(f"{FILES_PATH}\\font_bold.ttf", TEXT_FONT_SIZE)
+TEXT_BLD_IT_FONT = ImageFont.truetype(
+    f"{FILES_PATH}\\font_bolditalic.ttf", TEXT_FONT_SIZE
+)
 TIME_FONT = ImageFont.truetype(f"{FILES_PATH}\\font.ttf", TIME_FONT_SIZE)
 INITIALS_FONT = ImageFont.truetype(f"{FILES_PATH}\\font.ttf", INITIALS_FONT_SIZE)
-MAX_CANVAS_WIDTH = 512
 MARGIN = 10
 TOTAL_MARGIN = MARGIN * 2
 PFP_WIDTH = 75
@@ -74,7 +82,7 @@ def _draw_speech(speech: Speech, canvas_size: Size, speech_image_y: int) -> Imag
     pfp = _generate_avatar(
         speech.author.initials,
         _get_color(speech.author.user_id),
-        Point(MARGIN, speech_image_y + speech_size.height - PFP_WIDTH),
+        Point(MARGIN, MARGIN + speech_image_y + speech_size.height - PFP_WIDTH),
         canvas_size,
     )
     canvas = Image.alpha_composite(canvas, pfp)
@@ -90,12 +98,13 @@ def _draw_message(
     canvas = Image.new("RGBA", (canvas_size.width, canvas_size.height), (0, 0, 0, 0))
     d = ImageDraw.Draw(canvas)
 
+    rectangle_y = y + message_size.height + MARGIN
     d.rounded_rectangle(
         (
             TOTAL_MARGIN * 2 + PFP_WIDTH,
             y,
             TOTAL_MARGIN + message_size.width + PFP_WIDTH,
-            y + message_size.height,
+            rectangle_y,
         ),
         radius=5,
         fill="#202123",
@@ -104,9 +113,9 @@ def _draw_message(
     if message.is_last:
         d.polygon(
             [
-                (TOTAL_MARGIN * 2 + PFP_WIDTH, y + message_size.height),
-                (TOTAL_MARGIN * 2 + PFP_WIDTH, y + message_size.height - 8),
-                (TOTAL_MARGIN * 2 + PFP_WIDTH - 10, y + message_size.height),
+                (TOTAL_MARGIN * 2 + PFP_WIDTH, rectangle_y),
+                (TOTAL_MARGIN * 2 + PFP_WIDTH, rectangle_y - 8),
+                (TOTAL_MARGIN * 2 + PFP_WIDTH - 10, rectangle_y),
             ],
             fill="#202123",
         )
@@ -129,7 +138,7 @@ def _draw_message(
     d.text(
         (
             TOTAL_MARGIN * 2 + MARGIN * 2 + PFP_WIDTH + text_size.width,
-            text_y + int(TIME_FONT_SIZE / 2),
+            rectangle_y - MARGIN - int(TIME_FONT_SIZE / 2),
         ),
         message.time,
         fill="grey",
@@ -176,7 +185,7 @@ def _text_size(text, font) -> Size:
     image = Image.new(mode="P", size=(0, 0))
     d = ImageDraw.Draw(image)
     _, _, width, height = d.textbbox((0, 0), text=text, font=font)
-    return Size(width, TEXT_FONT_SIZE)
+    return Size(width, height)
 
 
 def _get_color(user_id: int) -> ColorScheme:
@@ -239,35 +248,134 @@ def _generate_gradient(color: ColorScheme, size: Size) -> Image:
     return base
 
 
-# def _break_fix(text, width, font, draw):
-#     if not text:
-#         return
-#     lo = 0
-#     hi = len(text)
-#     while lo < hi:
-#         mid = (lo + hi + 1) // 2
-#         t = text[:mid]
-#         w, h = _text_size(t, font=font)
-#         if w <= width:
-#             lo = mid
-#         else:
-#             hi = mid - 1
-#     t = text[:lo]
-#     w, h = _text_size(t, font=font)
-#     yield t, w, h
-#     yield from _break_fix(text[lo:], width, font, draw)
-#
-#
-# # https://stackoverflow.com/a/58176967/23112474
-# def _fit_text(img, text, color, font):
-#     width = img.size[0] - 2
-#     draw = ImageDraw.Draw(img)
-#     pieces = list(_break_fix(text, width, font, draw))
-#     height = sum(p[2] for p in pieces)
-#     if height > img.size[1]:
-#         raise ValueError("text doesn't fit")
-#     y = (img.size[1] - height) // 2
-#     for t, w, h in pieces:
-#         x = (img.size[0] - w) // 2
-#         draw.text((x, y), t, font=font, fill=color)
-#         y += h
+def _draw_md_text(text: str, size: int) -> Image:
+    canvas_result = Image.new("RGBA", (0, 0), (0, 0, 0, 0))
+    canvas_temp = Image.new("RGBA", (0, 0), (0, 0, 0, 0))
+    d_result = ImageDraw.Draw(canvas_result)
+    d_temp = ImageDraw.Draw(canvas_temp)
+
+    text_length = len(text)
+    mods = []
+    skip = False
+    newline = False
+    x = 0
+    y = 0
+
+    for index, char in enumerate(text):
+        if skip:
+            skip = False
+            continue
+
+        char_image: Optional[Image] = None
+
+        match char:
+            case "\\":
+                if index + 1 < text_length:
+                    skip = True
+                    next_char = text[index + 1]
+                    if next_char != "r":
+                        if next_char == "n":
+                            newline = True
+                        else:
+                            char_image = _draw_char(next_char, size, mods)
+                else:
+                    char_image = _draw_char(char, size, mods)
+            case "~":
+                if TextMode.STRIKE in mods:
+                    mods.remove(TextMode.STRIKE)
+                else:
+                    mods.append(TextMode.STRIKE)
+            case "`":
+                if TextMode.CODE in mods:
+                    mods.remove(TextMode.CODE)
+                else:
+                    mods.append(TextMode.CODE)
+            case "*":
+                if TextMode.BOLD in mods:
+                    mods.remove(TextMode.BOLD)
+                else:
+                    mods.append(TextMode.BOLD)
+            case "_":
+                if index + 1 < text_length:
+                    if text[index + 1] == "_":
+                        skip = True
+                        if TextMode.UNDERLINE in mods:
+                            mods.remove(TextMode.UNDERLINE)
+                        else:
+                            mods.append(TextMode.UNDERLINE)
+                    else:
+                        if TextMode.ITALIC in mods:
+                            mods.remove(TextMode.ITALIC)
+                        else:
+                            mods.append(TextMode.ITALIC)
+
+            case _:
+                char_image = _draw_char(char, size, mods)
+
+        if char_image:
+            if newline:
+                y = canvas_result.height
+                canvas_result = Image.new("RGBA", (canvas_result.width, canvas_result.height + char_image.height + 1))
+            else:
+                x = canvas_result.width
+                if canvas_result.width > x + char_image.width:
+                    canvas_result = Image.new("RGBA", (canvas_result.width, canvas_result.height))
+                else:
+                    canvas_result = Image.new("RGBA", (canvas_result.width + char_image.width + 1, canvas_result.height))
+
+            canvas_result.paste(canvas_temp)
+            canvas_result.paste(char_image, (x, y, x + char_image.width, y + char_image.height))
+
+            canvas_temp = canvas_result
+            char_image = None
+
+    return canvas_result
+
+
+def _draw_char(text: str, size: int, mods: list[TextMode]) -> Image:
+    if TextMode.CODE in mods:
+        font = TEXT_REG_FONT
+    else:
+        if TextMode.BOLD in mods and TextMode.ITALIC in mods:
+            font = TEXT_BLD_IT_FONT
+        elif TextMode.BOLD in mods:
+            font = TEXT_BLD_FONT
+        elif TextMode.ITALIC in mods:
+            font = TEXT_IT_FONT
+        else:
+            font = TEXT_REG_FONT
+
+    font.size = size
+
+    text_size = _text_size(text, font)
+    text_size.height += 2
+
+    canvas = Image.new("RGBA", (text_size.width, text_size.height), (0, 0, 0, 0))
+    d = ImageDraw.Draw(canvas)
+
+    if TextMode.CODE in mods:
+        d.rectangle((0, 0, text_size.width, TEXT_FONT_SIZE), fill="#773838")
+        d.text((0, TEXT_FONT_SIZE - text_size.height), text, fill="white", font=font)
+    else:
+        if TextMode.SPOILER in mods:
+            d.rectangle((0, 0, text_size.width, TEXT_FONT_SIZE), fill="#5b5b5b")
+
+        d.text((0, TEXT_FONT_SIZE - text_size.height), text, fill="white", font=font)
+
+        if TextMode.STRIKE in mods:
+            d.rectangle(
+                (
+                    0,
+                    int(text_size.height / 2),
+                    text_size.width,
+                    int(text_size.height / 2),
+                ),
+                fill="white",
+            )
+        if TextMode.UNDERLINE in mods:
+            d.rectangle(
+                (0, text_size.height - 2, text_size.width, text_size.height - 2),
+                fill="white",
+            )
+
+    return canvas
