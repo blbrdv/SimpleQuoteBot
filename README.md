@@ -15,3 +15,8 @@ A simple TG quote bot for generating quote screenshots from forwarded to private
 2. Reply '/quote' command on first message.
 3. ???
 4. Profit!
+
+## License
+Project licensed under [MIT License](/LICENSES/LICENSE).
+
+For third party elements see [LICENSES](/LICENSES)

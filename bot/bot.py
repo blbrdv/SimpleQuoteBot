@@ -13,11 +13,11 @@ from aiogram.types import BotCommand, Message, FSInputFile
 from aiogram.filters.command import Command
 from aiogram.enums.message_origin_type import MessageOriginType
 
-from Author import Author
-from Message import Message as Msg
-from Speech import Speech
+from .types.Author import Author
+from .types.Message import Message as Msg
+from .types.Speech import Speech
 
-from image import draw
+from .image import draw
 
 dispatcher = Dispatcher()
 bot = Bot(getenv("BOT_TOKEN"), parse_mode=ParseMode.MARKDOWN)
@@ -34,7 +34,7 @@ async def _on_start(message: Message) -> None:
     )
 
 
-@dispatcher.message(Command(BotCommand(command="quote", description="Create quote")))
+@dispatcher.message(Command(BotCommand(command="q", description="Create quote")))
 async def _on_quote(incoming_message: Message) -> None:
     reply = incoming_message.reply_to_message  # storing it b/c aiogram is retarded
     if not reply:

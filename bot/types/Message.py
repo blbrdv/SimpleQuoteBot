@@ -1,8 +1,7 @@
+import textwrap
 from typing import Optional
 
 import datetime as datetime
-
-from Author import Author
 
 
 class Message:
@@ -16,7 +15,7 @@ class Message:
         last: bool = False,
         header: Optional[str] = None
     ):
-        self.text = text
+        self.text = "\n".join(textwrap.TextWrapper(width=50).wrap(text=text))
         self.time = dt.astimezone(datetime.timezone.utc).strftime("%H:%M")
         self.last = last
         self.header = header
