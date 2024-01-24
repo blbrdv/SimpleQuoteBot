@@ -1,8 +1,9 @@
 import os
-import textwrap
-from typing import Optional
+
+from typing import Optional, Tuple
 
 from PIL import Image, ImageDraw, ImageFont
+from pilmoji import Pilmoji
 
 from .types.ColorScheme import ColorScheme
 from .types.Message import Message
@@ -23,8 +24,7 @@ TEXT_BLD_IT_FONT = ImageFont.truetype(
     f"{FILES_PATH}\\font_bold_italic.ttf", TEXT_FONT_SIZE
 )
 TEXT_MONO_FONT = ImageFont.truetype(f"{FILES_PATH}\\font_mono.ttf", TEXT_FONT_SIZE)
-INITIALS_FONT = ImageFont.truetype(f"{FILES_PATH}\\font.ttf", INITIALS_FONT_SIZE)
-MARGIN = 10
+MARGIN = 12
 TOTAL_MARGIN = MARGIN * 2
 PFP_WIDTH = 75
 
@@ -93,9 +93,10 @@ def _draw_message(
     message: Message, canvas_size: Size, y: int, header_color: RGB
 ) -> Image:
     message_size = _message_size(message)
-    text_size = _text_size(message.text, TEXT_FONT)
+    text_size = _text_size(message.text, TEXT_REG_FONT)
     canvas = Image.new("RGBA", (canvas_size.width, canvas_size.height), (0, 0, 0, 0))
     d = ImageDraw.Draw(canvas)
+    pij = Pilmoji(canvas)
 
     rectangle_y = y + message_size.height + MARGIN
     d.rounded_rectangle(
@@ -121,19 +122,14 @@ def _draw_message(
 
     text_y = y + MARGIN
     if message.is_first:
-        d.text(
+        pij.text(
             (TOTAL_MARGIN * 2 + MARGIN + PFP_WIDTH, y + MARGIN),
             message.header,
             fill=header_color.value,
-            font=TEXT_FONT,
+            font=TEXT_REG_FONT,
         )
         text_y += TEXT_FONT_SIZE + MARGIN
-    d.text(
-        (TOTAL_MARGIN * 2 + MARGIN + PFP_WIDTH, text_y),
-        message.text,
-        fill="white",
-        font=TEXT_FONT,
-    )
+
     d.text(
         (
             TOTAL_MARGIN * 2 + MARGIN * 2 + PFP_WIDTH + text_size.width,
@@ -141,8 +137,16 @@ def _draw_message(
         ),
         message.time,
         fill="grey",
-        font=TIME_FONT,
+        font=TEXT_REG_FONT,
     )
+
+    text_image = _draw_md_text(
+        message.text,
+        TEXT_FONT_SIZE,
+        Point(TOTAL_MARGIN * 2 + MARGIN + PFP_WIDTH, text_y),
+        canvas_size,
+    )
+    canvas = Image.alpha_composite(canvas, text_image)
 
     return canvas
 
@@ -162,14 +166,14 @@ def _speech_size(speech: Speech) -> Size:
 
 
 def _message_size(message: Message) -> Size:
-    text_size = _text_size(message.text, TEXT_FONT)
-    time_size = _text_size(message.time, TIME_FONT)
+    text_size = _text_size(message.text, TEXT_REG_FONT)
+    time_size = _text_size(message.time, TEXT_REG_FONT)
 
     width = text_size.width + TOTAL_MARGIN + TOTAL_MARGIN + time_size.width + MARGIN
     height = text_size.height + int(time_size.height / 2)
 
     if message.is_first:
-        user_name_size = _text_size(message.header, TEXT_FONT)
+        user_name_size = _text_size(message.header, TEXT_REG_FONT)
         user_name_width = user_name_size.width + TOTAL_MARGIN + TOTAL_MARGIN
 
         if user_name_width > width:
@@ -205,7 +209,7 @@ def _generate_avatar(
     text: str, color: ColorScheme, coordinates: Point, canvas_size: Size
 ) -> Image:
     size = Size(PFP_WIDTH, PFP_WIDTH)
-    text_size = _text_size(text, INITIALS_FONT)
+    text_size = _text_size(text, TEXT_REG_FONT)
 
     canvas_result = Image.new(
         "RGBA", (canvas_size.width, canvas_size.height), (0, 0, 0, 0)
@@ -215,15 +219,15 @@ def _generate_avatar(
     gradient = _generate_gradient(color, size).convert("RGBA")
 
     pfp = Image.composite(canvas_transparent, gradient, mask)
-    pfp_d = ImageDraw.Draw(pfp)
-    pfp_d.text(
+    pij = Pilmoji(pfp)
+    pij.text(
         (
             int(PFP_WIDTH / 2) - int(text_size.width / 2),
             int(PFP_WIDTH / 2) - int(INITIALS_FONT_SIZE / 2) + int(MARGIN / 2),
         ),
         text,
         fill="white",
-        font=INITIALS_FONT,
+        font=TEXT_REG_FONT,
     )
 
     canvas_result.paste(pfp, (coordinates.X, coordinates.Y))
@@ -247,18 +251,18 @@ def _generate_gradient(color: ColorScheme, size: Size) -> Image:
     return base
 
 
-def _draw_md_text(text: str, size: int) -> Image:
-    canvas_result = Image.new("RGBA", (0, 0), (0, 0, 0, 0))
-    canvas_temp = Image.new("RGBA", (0, 0), (0, 0, 0, 0))
-    d_result = ImageDraw.Draw(canvas_result)
-    d_temp = ImageDraw.Draw(canvas_temp)
+def _draw_md_text(text: str, size: int, position: Point, canvas_size: Size) -> Image:
+    canvas_result = Image.new(
+        "RGBA", (canvas_size.width, canvas_size.height), (0, 0, 0, 0)
+    )
 
     text_length = len(text)
     mods = []
     skip = False
     newline = False
-    x = 0
-    y = 0
+    x = position.X
+    y = position.Y
+    last_y = 0
 
     for index, char in enumerate(text):
         if skip:
@@ -266,6 +270,7 @@ def _draw_md_text(text: str, size: int) -> Image:
             continue
 
         char_image: Optional[Image] = None
+        text_size: Optional[Size] = None
 
         match char:
             case "\\":
@@ -276,9 +281,13 @@ def _draw_md_text(text: str, size: int) -> Image:
                         if next_char == "n":
                             newline = True
                         else:
-                            char_image = _draw_char(next_char, size, mods)
+                            (text_size, char_image) = _draw_char(
+                                next_char, size, canvas_size, Point(x, y), mods
+                            )
                 else:
-                    char_image = _draw_char(char, size, mods)
+                    (text_size, char_image) = _draw_char(
+                        char, size, canvas_size, Point(x, y), mods
+                    )
             case "~":
                 if TextMode.STRIKE in mods:
                     mods.remove(TextMode.STRIKE)
@@ -307,33 +316,38 @@ def _draw_md_text(text: str, size: int) -> Image:
                             mods.remove(TextMode.ITALIC)
                         else:
                             mods.append(TextMode.ITALIC)
+            case "|":
+                if index + 1 < text_length:
+                    if text[index + 1] == "|":
+                        skip = True
+                        if TextMode.SPOILER in mods:
+                            mods.remove(TextMode.SPOILER)
+                        else:
+                            mods.append(TextMode.SPOILER)
 
             case _:
-                char_image = _draw_char(char, size, mods)
+                (text_size, char_image) = _draw_char(
+                    char, size, canvas_size, Point(x, y), mods
+                )
 
         if char_image:
             if newline:
-                y = canvas_result.height
-                canvas_result = Image.new("RGBA", (canvas_result.width, canvas_result.height + char_image.height + 1))
+                y += text_size.height
             else:
-                x = canvas_result.width
-                if canvas_result.width > x + char_image.width:
-                    canvas_result = Image.new("RGBA", (canvas_result.width, canvas_result.height))
-                else:
-                    canvas_result = Image.new("RGBA", (canvas_result.width + char_image.width + 1, canvas_result.height))
+                x += text_size.width
 
-            canvas_result.paste(canvas_temp)
-            canvas_result.paste(char_image, (x, y, x + char_image.width, y + char_image.height))
-
-            canvas_temp = canvas_result
+            canvas_result = Image.alpha_composite(canvas_result, char_image)
             char_image = None
+            text_size = None
 
     return canvas_result
 
 
-def _draw_char(text: str, size: int, mods: list[TextMode]) -> Image:
+def _draw_char(
+    text: str, text_size: int, canvas_size: Size, position: Point, mods: list[TextMode]
+) -> Tuple[Size, Image]:
     if TextMode.CODE in mods:
-        font = TEXT_REG_FONT
+        font = TEXT_MONO_FONT
     else:
         if TextMode.BOLD in mods and TextMode.ITALIC in mods:
             font = TEXT_BLD_IT_FONT
@@ -344,37 +358,69 @@ def _draw_char(text: str, size: int, mods: list[TextMode]) -> Image:
         else:
             font = TEXT_REG_FONT
 
-    font.size = size
+    font.size = text_size
 
     text_size = _text_size(text, font)
     text_size.height += 2
 
-    canvas = Image.new("RGBA", (text_size.width, text_size.height), (0, 0, 0, 0))
+    canvas = Image.new("RGBA", (canvas_size.width, canvas_size.height), (0, 0, 0, 0))
     d = ImageDraw.Draw(canvas)
+    pij = Pilmoji(canvas)
 
     if TextMode.CODE in mods:
-        d.rectangle((0, 0, text_size.width, TEXT_FONT_SIZE), fill="#773838")
-        d.text((0, TEXT_FONT_SIZE - text_size.height), text, fill="white", font=font)
+        d.rectangle(
+            (
+                position.X,
+                position.Y,
+                position.X + text_size.width,
+                position.Y + TEXT_FONT_SIZE,
+            ),
+            fill="#773838",
+        )
+        d.text(
+            (position.X, position.Y),
+            text,
+            fill="white",
+            font=font,
+        )
     else:
         if TextMode.SPOILER in mods:
-            d.rectangle((0, 0, text_size.width, TEXT_FONT_SIZE), fill="#5b5b5b")
+            d.rectangle(
+                (
+                    position.X,
+                    position.Y,
+                    position.X + text_size.width,
+                    position.Y + TEXT_FONT_SIZE,
+                ),
+                fill="#5b5b5b",
+            )
 
-        d.text((0, TEXT_FONT_SIZE - text_size.height), text, fill="white", font=font)
+        pij.text(
+            (position.X, position.Y),
+            text,
+            fill="white",
+            font=font,
+        )
 
         if TextMode.STRIKE in mods:
             d.rectangle(
                 (
-                    0,
-                    int(text_size.height / 2),
-                    text_size.width,
-                    int(text_size.height / 2),
+                    position.X,
+                    position.Y + int((TEXT_FONT_SIZE + 5) / 2),
+                    position.X + text_size.width,
+                    position.Y + int((TEXT_FONT_SIZE + 5) / 2),
                 ),
                 fill="white",
             )
         if TextMode.UNDERLINE in mods:
             d.rectangle(
-                (0, text_size.height - 2, text_size.width, text_size.height - 2),
+                (
+                    position.X,
+                    position.Y + text_size.height,
+                    position.X + text_size.width,
+                    position.Y + text_size.height,
+                ),
                 fill="white",
             )
 
-    return canvas
+    return text_size, canvas
