@@ -28,7 +28,7 @@ history = {}
 async def _on_start(message: Message) -> None:
     await message.reply(
         "1. Forward messages to private chat with bot.\n"
-        "2. Reply '/quote' command on first message.\n"
+        "2. Reply '/q' command on first message.\n"
         "3. ???\n"
         "4. Profit!\n"
     )
