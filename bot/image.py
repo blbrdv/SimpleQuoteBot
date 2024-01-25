@@ -65,17 +65,18 @@ def _draw_speech(speech: Speech, canvas_size: Size, speech_image_y: int) -> Imag
     canvas = Image.new("RGBA", (canvas_size.width, canvas_size.height), (0, 0, 0, 0))
 
     message_image_y = TOTAL_MARGIN + speech_image_y
-    for message in speech.messages:
+    for index, message in enumerate(speech.messages):
         message_image = _draw_message(
             message,
             canvas_size,
             message_image_y,
             _get_color(speech.author.user_id).primary,
+            index == 0
         )
 
         canvas = Image.alpha_composite(canvas, message_image)
 
-        message_size = _message_size(message)
+        message_size = _message_size(message, index == 0)
         message_image_y += message_size.height + TOTAL_MARGIN
 
     pfp = _generate_avatar(
@@ -90,9 +91,9 @@ def _draw_speech(speech: Speech, canvas_size: Size, speech_image_y: int) -> Imag
 
 
 def _draw_message(
-    message: Message, canvas_size: Size, y: int, header_color: RGB
+    message: Message, canvas_size: Size, y: int, header_color: RGB, is_first: bool
 ) -> Image:
-    message_size = _message_size(message)
+    message_size = _message_size(message, is_first)
     text_size = _text_size(message.text, TEXT_REG_FONT)
     canvas = Image.new("RGBA", (canvas_size.width, canvas_size.height), (0, 0, 0, 0))
     d = ImageDraw.Draw(canvas)
@@ -133,7 +134,7 @@ def _draw_message(
     d.text(
         (
             TOTAL_MARGIN * 2 + MARGIN * 2 + PFP_WIDTH + text_size.width,
-            rectangle_y - MARGIN - int(TIME_FONT_SIZE / 2),
+            rectangle_y - TOTAL_MARGIN - int(TIME_FONT_SIZE / 2),
         ),
         message.time,
         fill="grey",
@@ -155,8 +156,8 @@ def _speech_size(speech: Speech) -> Size:
     canvas_height = 0
     canvas_width = 0
 
-    for message in speech.messages:
-        message_size = _message_size(message)
+    for index, message in enumerate(speech.messages):
+        message_size = _message_size(message, index == 0)
 
         canvas_height += message_size.height + TOTAL_MARGIN
         if message_size.width + TOTAL_MARGIN > canvas_width:
@@ -165,12 +166,15 @@ def _speech_size(speech: Speech) -> Size:
     return Size(canvas_width, canvas_height)
 
 
-def _message_size(message: Message) -> Size:
+def _message_size(message: Message, is_first: bool) -> Size:
     text_size = _text_size(message.text, TEXT_REG_FONT)
     time_size = _text_size(message.time, TEXT_REG_FONT)
 
     width = text_size.width + TOTAL_MARGIN + TOTAL_MARGIN + time_size.width + MARGIN
     height = text_size.height + int(time_size.height / 2)
+
+    if not is_first:
+        height += MARGIN
 
     if message.is_first:
         user_name_size = _text_size(message.header, TEXT_REG_FONT)
