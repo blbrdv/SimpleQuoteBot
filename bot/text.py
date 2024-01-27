@@ -160,7 +160,7 @@ def _draw_char(
             d.rectangle(
                 (
                     position.X - 1,
-                    position.Y - 2,
+                    position.Y - 1,
                     position.X + text_size.width + 1,
                     position.Y + TEXT_FONT_SIZE + 5,
                 ),
