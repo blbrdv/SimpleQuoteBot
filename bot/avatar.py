@@ -1,11 +1,13 @@
 from PIL import Image
 from pilmoji import Pilmoji
 
-from bot.constants import PFP_WIDTH, TEXT_REG_FONT, FILES_PATH, INITIALS_FONT_SIZE, MARGIN
+from bot.constants import PFP_WIDTH, TEXT_REG_FONT, FILES_PATH, MARGIN
 from bot.text import get_text_size
 from bot.types.ColorScheme import ColorScheme
 from bot.types.Point import Point
 from bot.types.Size import Size
+
+INITIALS_FONT_SIZE = 32
 
 
 def generate_avatar(

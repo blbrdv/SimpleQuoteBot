@@ -1,12 +1,19 @@
 from typing import Tuple, Optional
 
-from PIL import ImageDraw, Image
+from PIL import ImageDraw, Image, ImageFont
 from pilmoji import Pilmoji
 
-from bot.constants import TEXT_FONT_SIZE, TEXT_MONO_FONT, TEXT_BLD_IT_FONT, TEXT_BLD_FONT, TEXT_IT_FONT, TEXT_REG_FONT
+from bot.constants import TEXT_FONT_SIZE, TEXT_REG_FONT, FILES_PATH
 from bot.types.Point import Point
 from bot.types.Size import Size
 from bot.types.TextMode import TextMode
+
+TEXT_IT_FONT = ImageFont.truetype(f"{FILES_PATH}/font_italic.ttf", TEXT_FONT_SIZE)
+TEXT_BLD_FONT = ImageFont.truetype(f"{FILES_PATH}/font_bold.ttf", TEXT_FONT_SIZE)
+TEXT_BLD_IT_FONT = ImageFont.truetype(
+    f"{FILES_PATH}/font_bold_italic.ttf", TEXT_FONT_SIZE
+)
+TEXT_MONO_FONT = ImageFont.truetype(f"{FILES_PATH}/font_mono.ttf", TEXT_FONT_SIZE)
 
 
 # https://stackoverflow.com/a/77749307/23112474

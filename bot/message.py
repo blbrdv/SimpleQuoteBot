@@ -1,13 +1,14 @@
 from PIL import Image, ImageDraw
 from pilmoji import Pilmoji
 
-from bot.constants import TEXT_REG_FONT, MARGIN, TOTAL_MARGIN, PFP_WIDTH, TEXT_FONT_SIZE, TIME_FONT_SIZE
+from bot.constants import TEXT_REG_FONT, MARGIN, TOTAL_MARGIN, PFP_WIDTH, TEXT_FONT_SIZE
 from bot.text import get_text_size, draw_md_text
 from bot.types.Message import Message
 from bot.types.Point import Point
 from bot.types.RGB import RGB
 from bot.types.Size import Size
 
+TIME_FONT_SIZE = 12
 
 def get_message_size(message: Message, is_first: bool) -> Size:
     text_size = get_text_size(message.text, TEXT_REG_FONT)
