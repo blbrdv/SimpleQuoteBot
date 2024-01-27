@@ -71,7 +71,7 @@ def _draw_speech(speech: Speech, canvas_size: Size, speech_image_y: int) -> Imag
             canvas_size,
             message_image_y,
             _get_color(speech.author.user_id).primary,
-            index == 0
+            index == 0,
         )
 
         canvas = Image.alpha_composite(canvas, message_image)
