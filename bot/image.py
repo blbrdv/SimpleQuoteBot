@@ -5,6 +5,7 @@ from typing import Optional, Tuple
 from PIL import Image, ImageDraw, ImageFont
 from pilmoji import Pilmoji
 
+from .color import get_color
 from .types.ColorScheme import ColorScheme
 from .types.Message import Message
 from .types.Point import Point
@@ -70,7 +71,7 @@ def _draw_speech(speech: Speech, canvas_size: Size, speech_image_y: int) -> Imag
             message,
             canvas_size,
             message_image_y,
-            _get_color(speech.author.user_id).primary,
+            get_color(speech.author.user_id).primary,
             index == 0,
         )
 
@@ -81,7 +82,7 @@ def _draw_speech(speech: Speech, canvas_size: Size, speech_image_y: int) -> Imag
 
     pfp = _generate_avatar(
         speech.author.initials,
-        _get_color(speech.author.user_id),
+        get_color(speech.author.user_id),
         Point(MARGIN, MARGIN + speech_image_y + speech_size.height - PFP_WIDTH),
         canvas_size,
     )
@@ -193,20 +194,6 @@ def _text_size(text, font) -> Size:
     d = ImageDraw.Draw(image)
     _, _, width, height = d.textbbox((0, 0), text=text, font=font)
     return Size(width, height)
-
-
-def _get_color(user_id: int) -> ColorScheme:
-    colors = [
-        ColorScheme(RGB(255, 81, 106), RGB(255, 136, 94)),
-        ColorScheme(RGB(255, 168, 92), RGB(255, 205, 106)),
-        ColorScheme(RGB(214, 105, 237), RGB(224, 162, 243)),
-        ColorScheme(RGB(84, 203, 104), RGB(160, 222, 126)),
-        ColorScheme(RGB(40, 201, 183), RGB(83, 237, 214)),
-        ColorScheme(RGB(42, 158, 241), RGB(114, 213, 253)),
-        ColorScheme(RGB(255, 113, 154), RGB(255, 168, 168)),
-    ]
-
-    return colors[abs(user_id) % 7]
 
 
 def _generate_avatar(
