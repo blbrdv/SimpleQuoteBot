@@ -266,7 +266,6 @@ def _draw_md_text(text: str, size: int, position: Point, canvas_size: Size) -> I
     newline = False
     x = position.X
     y = position.Y
-    last_y = 0
 
     for index, char in enumerate(text):
         if skip:
