@@ -142,10 +142,10 @@ def _draw_char(
     if TextMode.CODE in mods:
         d.rectangle(
             (
-                position.X,
-                position.Y,
-                position.X + text_size.width,
-                position.Y + TEXT_FONT_SIZE,
+                position.X - 1,
+                position.Y - 1,
+                position.X + text_size.width + 1,
+                position.Y + TEXT_FONT_SIZE + 5,
             ),
             fill="#773838",
         )
@@ -159,10 +159,10 @@ def _draw_char(
         if TextMode.SPOILER in mods:
             d.rectangle(
                 (
-                    position.X,
-                    position.Y,
-                    position.X + text_size.width,
-                    position.Y + TEXT_FONT_SIZE,
+                    position.X - 1,
+                    position.Y - 2,
+                    position.X + text_size.width + 1,
+                    position.Y + TEXT_FONT_SIZE + 5,
                 ),
                 fill="#5b5b5b",
             )
