@@ -10,6 +10,7 @@ from bot.types.Size import Size
 
 TIME_FONT_SIZE = 12
 
+
 def get_message_size(message: Message, is_first: bool) -> Size:
     text_size = get_text_size(message.text, TEXT_REG_FONT)
     time_size = get_text_size(message.time, TEXT_REG_FONT)
