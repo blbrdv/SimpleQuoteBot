@@ -119,14 +119,17 @@ async def _on_quote(incoming_message: Message) -> None:
     try:
         draw(data, file_name)
         await incoming_message.reply_photo(FSInputFile(file_name))
-
-        os.remove(file_name)
-        history[incoming_message.chat.id].clear()
     except:
         if getenv("DEBUG"):
             await incoming_message.reply(traceback.format_exc())
         else:
             print(traceback.format_exc(), file=sys.stderr)
+    finally:
+        if os.path.exists(file_name):
+            os.remove(file_name)
+
+        history[incoming_message.chat.id].clear()
+
 
 
 @dispatcher.message()
