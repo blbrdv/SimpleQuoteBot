@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageFont
 from pilmoji import Pilmoji
 
 from bot.constants import PFP_WIDTH, TEXT_REG_FONT, FILES_PATH, MARGIN
@@ -7,14 +7,15 @@ from bot.types.ColorScheme import ColorScheme
 from bot.types.Point import Point
 from bot.types.Size import Size
 
-INITIALS_FONT_SIZE = 32
+INITIALS_FONT_SIZE = 30
+INITIALS_FONT = ImageFont.truetype(f"{FILES_PATH}/font_regular.ttf", INITIALS_FONT_SIZE)
 
 
 def generate_avatar(
     text: str, color: ColorScheme, coordinates: Point, canvas_size: Size
 ) -> Image:
     size = Size(PFP_WIDTH, PFP_WIDTH)
-    text_size = get_text_size(text, TEXT_REG_FONT)
+    text_size = get_text_size(text, INITIALS_FONT)
 
     canvas_result = Image.new(
         "RGBA", (canvas_size.width, canvas_size.height), (0, 0, 0, 0)
@@ -28,11 +29,11 @@ def generate_avatar(
     pij.text(
         (
             int(PFP_WIDTH / 2) - int(text_size.width / 2),
-            int(PFP_WIDTH / 2) - int(INITIALS_FONT_SIZE / 2) + int(MARGIN / 2),
+            int(PFP_WIDTH / 2) - int(INITIALS_FONT_SIZE / 2),
         ),
         text,
         fill="white",
-        font=TEXT_REG_FONT,
+        font=INITIALS_FONT,
     )
 
     canvas_result.paste(pfp, (coordinates.X, coordinates.Y))
