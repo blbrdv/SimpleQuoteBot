@@ -1,14 +1,22 @@
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 from pilmoji import Pilmoji
 
-from bot.constants import TEXT_REG_FONT, MARGIN, TOTAL_MARGIN, PFP_WIDTH, TEXT_FONT_SIZE
+from bot.constants import (
+    TEXT_REG_FONT,
+    MARGIN,
+    TOTAL_MARGIN,
+    PFP_WIDTH,
+    TEXT_FONT_SIZE,
+    RGBA_ZERO, FILES_PATH,
+)
 from bot.text import get_text_size, draw_md_text
 from bot.types.Message import Message
 from bot.types.Point import Point
 from bot.types.RGB import RGB
 from bot.types.Size import Size
 
-TIME_FONT_SIZE = 12
+TIME_FONT_SIZE = 16
+TIME_FONT = ImageFont.truetype(f"{FILES_PATH}/font_regular.ttf", TIME_FONT_SIZE)
 
 
 def get_message_size(message: Message, is_first: bool) -> Size:
@@ -80,7 +88,7 @@ def draw_message(
         ),
         message.time,
         fill="grey",
-        font=TEXT_REG_FONT,
+        font=TIME_FONT,
     )
 
     text_image = draw_md_text(
