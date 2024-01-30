@@ -2,7 +2,7 @@ from PIL import Image
 
 from bot.avatar import generate_avatar
 from bot.color import get_color
-from bot.constants import TOTAL_MARGIN, MARGIN, PFP_WIDTH
+from bot.constants import TOTAL_MARGIN, MARGIN, PFP_WIDTH, RGBA_ZERO
 from bot.message import draw_message, get_message_size
 from bot.types.Point import Point
 from bot.types.Size import Size
@@ -25,7 +25,7 @@ def get_speech_size(speech: Speech) -> Size:
 
 def draw_speech(speech: Speech, canvas_size: Size, speech_image_y: int) -> Image:
     speech_size = get_speech_size(speech)
-    canvas = Image.new("RGBA", (canvas_size.width, canvas_size.height), (0, 0, 0, 0))
+    canvas = Image.new("RGBA", (canvas_size.width, canvas_size.height), RGBA_ZERO)
 
     message_image_y = TOTAL_MARGIN + speech_image_y
     for index, message in enumerate(speech.messages):

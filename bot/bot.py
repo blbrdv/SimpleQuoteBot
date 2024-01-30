@@ -84,8 +84,14 @@ async def _on_quote(incoming_message: Message) -> None:
             lastname = message.from_user.last_name
             message_datetime = message.date
 
+        reply_text = ""
+        if message.reply_to_message:
+            reply_text = message.reply_to_message.md_text
+
         if last_user_id == user_id:
-            data[-1].messages.append(Msg(message.md_text, message_datetime))
+            data[-1].messages.append(
+                Msg(message, message.md_text, reply_text, message_datetime)
+            )
         else:
             if len(data) > 0 and data[-1]:
                 data[-1].messages[-1].last = True
@@ -95,7 +101,15 @@ async def _on_quote(incoming_message: Message) -> None:
                 Speech(
                     author,
                     pfp,
-                    [Msg(message.md_text, message_datetime, header=author.full_name)],
+                    [
+                        Msg(
+                            message,
+                            message.md_text,
+                            reply_text,
+                            message_datetime,
+                            header=author.full_name,
+                        )
+                    ],
                 )
             )
 
@@ -129,7 +143,6 @@ async def _on_quote(incoming_message: Message) -> None:
             os.remove(file_name)
 
         history[incoming_message.chat.id].clear()
-
 
 
 @dispatcher.message()

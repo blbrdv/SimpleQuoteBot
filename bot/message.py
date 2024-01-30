@@ -7,9 +7,10 @@ from bot.constants import (
     TOTAL_MARGIN,
     PFP_WIDTH,
     TEXT_FONT_SIZE,
-    RGBA_ZERO, FILES_PATH,
+    RGBA_ZERO,
+    FILES_PATH,
 )
-from bot.text import get_text_size, draw_md_text
+from bot.text import get_text_size, draw_md_text, draw_reply, get_reply_width
 from bot.types.Message import Message
 from bot.types.Point import Point
 from bot.types.RGB import RGB
@@ -29,6 +30,9 @@ def get_message_size(message: Message, is_first: bool) -> Size:
     if not is_first:
         height += MARGIN
 
+    if message.reply_text:
+        height += TEXT_FONT_SIZE * 2 + MARGIN * 3
+
     if message.is_first:
         user_name_size = get_text_size(message.header, TEXT_REG_FONT)
         user_name_width = user_name_size.width + TOTAL_MARGIN + TOTAL_MARGIN
@@ -45,16 +49,24 @@ def draw_message(
 ) -> Image:
     message_size = get_message_size(message, is_first)
     text_size = get_text_size(message.text, TEXT_REG_FONT)
-    canvas = Image.new("RGBA", (canvas_size.width, canvas_size.height), (0, 0, 0, 0))
+    canvas = Image.new("RGBA", (canvas_size.width, canvas_size.height), RGBA_ZERO)
     d = ImageDraw.Draw(canvas)
     pij = Pilmoji(canvas)
 
     rectangle_y = y + message_size.height + MARGIN
+
+    width = message_size.width
+    if message.reply:
+        reply_width = get_reply_width(message.reply.fullname, message.reply.text) + TOTAL_MARGIN * 2
+        if reply_width > message_size.width:
+            width = reply_width
+    width += TOTAL_MARGIN + PFP_WIDTH
+
     d.rounded_rectangle(
         (
             TOTAL_MARGIN * 2 + PFP_WIDTH,
             y,
-            TOTAL_MARGIN + message_size.width + PFP_WIDTH,
+            width,
             rectangle_y,
         ),
         radius=5,
@@ -72,6 +84,7 @@ def draw_message(
         )
 
     text_y = y + MARGIN
+
     if message.is_first:
         pij.text(
             (TOTAL_MARGIN * 2 + MARGIN + PFP_WIDTH, y + MARGIN),
@@ -81,15 +94,30 @@ def draw_message(
         )
         text_y += TEXT_FONT_SIZE + MARGIN
 
+    time_y = rectangle_y - TOTAL_MARGIN - int(TIME_FONT_SIZE / 2)
+    if message.reply:
+        time_y += MARGIN
     d.text(
         (
             TOTAL_MARGIN * 2 + MARGIN * 2 + PFP_WIDTH + text_size.width,
-            rectangle_y - TOTAL_MARGIN - int(TIME_FONT_SIZE / 2),
+            time_y,
         ),
         message.time,
         fill="grey",
         font=TIME_FONT,
     )
+
+    if message.reply:
+        reply = draw_reply(
+            message.reply.fullname,
+            message.reply.text,
+            canvas_size,
+            Point(TOTAL_MARGIN * 2 + MARGIN + PFP_WIDTH, text_y),
+            header_color.value,
+        )
+        canvas = Image.alpha_composite(canvas, reply)
+
+        text_y += TEXT_FONT_SIZE * 4 + MARGIN
 
     text_image = draw_md_text(
         message.text,

@@ -1,7 +1,7 @@
 from PIL import Image, ImageFont
 from pilmoji import Pilmoji
 
-from bot.constants import PFP_WIDTH, TEXT_REG_FONT, FILES_PATH, MARGIN
+from bot.constants import PFP_WIDTH, FILES_PATH, RGBA_ZERO
 from bot.text import get_text_size
 from bot.types.ColorScheme import ColorScheme
 from bot.types.Point import Point
@@ -18,9 +18,9 @@ def generate_avatar(
     text_size = get_text_size(text, INITIALS_FONT)
 
     canvas_result = Image.new(
-        "RGBA", (canvas_size.width, canvas_size.height), (0, 0, 0, 0)
+        "RGBA", (canvas_size.width, canvas_size.height), RGBA_ZERO
     )
-    canvas_transparent = Image.new("RGBA", (size.width, size.height), (0, 0, 0, 0))
+    canvas_transparent = Image.new("RGBA", (size.width, size.height), RGBA_ZERO)
     mask = Image.open(f"{FILES_PATH}/pfp_mask.png").convert("L")
     gradient = _generate_gradient(color, size).convert("RGBA")
 

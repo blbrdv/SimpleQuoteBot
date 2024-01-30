@@ -3,7 +3,14 @@ from typing import Tuple, Optional
 from PIL import ImageDraw, Image, ImageFont
 from pilmoji import Pilmoji
 
-from bot.constants import TEXT_FONT_SIZE, TEXT_REG_FONT, FILES_PATH
+from bot.constants import (
+    TEXT_FONT_SIZE,
+    TEXT_REG_FONT,
+    FILES_PATH,
+    RGBA_ZERO,
+    MARGIN,
+    TOTAL_MARGIN,
+)
 from bot.types.Point import Point
 from bot.types.Size import Size
 from bot.types.TextMode import TextMode
@@ -26,7 +33,7 @@ def get_text_size(text, font) -> Size:
 
 def draw_md_text(text: str, size: int, position: Point, canvas_size: Size) -> Image:
     canvas_result = Image.new(
-        "RGBA", (canvas_size.width, canvas_size.height), (0, 0, 0, 0)
+        "RGBA", (canvas_size.width, canvas_size.height), RGBA_ZERO
     )
 
     text_length = len(text)
@@ -115,6 +122,79 @@ def draw_md_text(text: str, size: int, position: Point, canvas_size: Size) -> Im
     return canvas_result
 
 
+def get_reply_width(header: str, text: str) -> int:
+    header_size = get_text_size(header, TEXT_REG_FONT)
+    text_size = get_text_size(text, TEXT_REG_FONT)
+
+    text_width = header_size.width + TOTAL_MARGIN
+    if text_size.width + TOTAL_MARGIN > text_width:
+        text_width = text_size.width + TOTAL_MARGIN
+
+    text_width += 5
+
+    return text_width
+
+
+def draw_reply(
+    header: str,
+    text: str,
+    canvas_size: Size,
+    position: Point,
+    color: Tuple[int, int, int],
+) -> Image:
+    canvas = Image.new("RGBA", (canvas_size.width, canvas_size.height), RGBA_ZERO)
+    header_size = get_text_size(header, TEXT_REG_FONT)
+    text_size = get_text_size(text, TEXT_REG_FONT)
+    d = ImageDraw.Draw(canvas)
+    pij = Pilmoji(canvas)
+
+    text_width = header_size.width + TOTAL_MARGIN
+    if text_size.width + TOTAL_MARGIN > text_width:
+        text_width = text_size.width + TOTAL_MARGIN
+
+    height = TEXT_FONT_SIZE * 2 + MARGIN * 3
+    d.rectangle(
+        (
+            position.X,
+            position.Y,
+            position.X + 4,
+            position.Y + height,
+        ),
+        fill=color,
+    )
+    d.rounded_rectangle(
+        (
+            position.X + 5,
+            position.Y,
+            position.X + 5 + text_width,
+            position.Y + height,
+        ),
+        radius=5,
+        fill="#434448",
+        corners=(False, True, True, False),
+    )
+    pij.text(
+        (
+            position.X + 4 + MARGIN,
+            position.Y + MARGIN,
+        ),
+        header,
+        fill=color,
+        font=TEXT_REG_FONT,
+    )
+    pij.text(
+        (
+            position.X + 4 + MARGIN,
+            position.Y + TOTAL_MARGIN + TEXT_FONT_SIZE,
+        ),
+        text,
+        fill="white",
+        font=TEXT_REG_FONT,
+    )
+
+    return canvas
+
+
 def _draw_char(
     text: str, text_size: int, canvas_size: Size, position: Point, mods: list[TextMode]
 ) -> Tuple[Size, Image]:
@@ -135,7 +215,7 @@ def _draw_char(
     text_size = get_text_size(text, font)
     text_size.height += 2
 
-    canvas = Image.new("RGBA", (canvas_size.width, canvas_size.height), (0, 0, 0, 0))
+    canvas = Image.new("RGBA", (canvas_size.width, canvas_size.height), RGBA_ZERO)
     d = ImageDraw.Draw(canvas)
     pij = Pilmoji(canvas)
 
