@@ -13,11 +13,11 @@ from aiogram.types import BotCommand, Message, FSInputFile
 from aiogram.filters.command import Command
 from aiogram.enums.message_origin_type import MessageOriginType
 
-from .types.Author import Author
-from .types.Message import Message as Msg
-from .types.Speech import Speech
+from bot.types.Author import Author
+from bot.types.Message import Message as Msg
+from bot.types.Speech import Speech
 
-from .image import draw
+from bot.draw import draw
 
 dispatcher = Dispatcher()
 bot = Bot(getenv("BOT_TOKEN"), parse_mode=ParseMode.MARKDOWN)
@@ -84,8 +84,14 @@ async def _on_quote(incoming_message: Message) -> None:
             lastname = message.from_user.last_name
             message_datetime = message.date
 
+        reply_text = ""
+        if message.reply_to_message:
+            reply_text = message.reply_to_message.md_text
+
         if last_user_id == user_id:
-            data[-1].messages.append(Msg(message.md_text, message_datetime))
+            data[-1].messages.append(
+                Msg(message, message.md_text, reply_text, message_datetime)
+            )
         else:
             if len(data) > 0 and data[-1]:
                 data[-1].messages[-1].last = True
@@ -95,7 +101,15 @@ async def _on_quote(incoming_message: Message) -> None:
                 Speech(
                     author,
                     pfp,
-                    [Msg(message.md_text, message_datetime, header=author.full_name)],
+                    [
+                        Msg(
+                            message,
+                            message.md_text,
+                            reply_text,
+                            message_datetime,
+                            header=author.full_name,
+                        )
+                    ],
                 )
             )
 
@@ -119,14 +133,16 @@ async def _on_quote(incoming_message: Message) -> None:
     try:
         draw(data, file_name)
         await incoming_message.reply_photo(FSInputFile(file_name))
-
-        os.remove(file_name)
-        history[incoming_message.chat.id].clear()
     except:
         if getenv("DEBUG"):
             await incoming_message.reply(traceback.format_exc())
         else:
             print(traceback.format_exc(), file=sys.stderr)
+    finally:
+        if os.path.exists(file_name):
+            os.remove(file_name)
+
+        history[incoming_message.chat.id].clear()
 
 
 @dispatcher.message()
