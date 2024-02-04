@@ -1,37 +1,84 @@
-from PIL import Image
+from string import Template
 
-from .constants import FILES_PATH, TOTAL_MARGIN, PFP_WIDTH
-from .speech import draw_speech, get_speech_size
-from .types.Size import Size
-from .types.Speech import Speech
+from PIL import Image, PyAccess
+
+from bot.speech import Speech
+from bot.utils import open_file, full_path
+
+MAIN_HTML = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple quotes</title>
+</head>
+<body>
+    <div class="speeches">
+        $content
+    </div>
+</body>
+</html>"""
+CSS_FONTS = """
+@font-face {
+    font-family: "Noto Sans";
+    src: url("$fontregular");
+}
+
+@font-face {
+    font-family: "Noto Mono";
+    src: url("$fontmono");
+}
+"""
+CSS_BACKGROUND = """
+.speeches { 
+  background: url("$path");
+}"""
 
 
-def draw(data: list[Speech], name: str) -> None:
-    canvas_height = TOTAL_MARGIN
-    canvas_width = PFP_WIDTH
+def draw(speeches: list[Speech], name: str) -> None:
+    from html2image import Html2Image
 
-    for speech in data:
-        speech_size = get_speech_size(speech)
+    hti = Html2Image()
+    html_template = Template(MAIN_HTML)
 
-        canvas_height += speech_size.height
-        full_width = speech_size.width + TOTAL_MARGIN + PFP_WIDTH
-        if full_width > canvas_width:
-            canvas_width = full_width
+    content = ""
+    for speech in speeches:
+        content += speech.draw()
 
-    bg_raw = Image.open(f"{FILES_PATH}/bg.png").convert("RGBA")
-    bg = bg_raw.resize((canvas_width, canvas_height))
-    canvas = Image.new("RGBA", (canvas_width, canvas_height), (0, 0, 0))
-    canvas.paste(bg)
+    html = html_template.substitute(content=content)
 
-    speech_image_y = 0
-    for speech in data:
-        speech_size = get_speech_size(speech)
-        speech_image = draw_speech(
-            speech, Size(canvas_width, canvas_height), speech_image_y
-        )
+    css_font_template = Template(CSS_FONTS)
+    css_fonts = css_font_template.substitute(
+        fontregular=full_path("files/font_regular.ttf"),
+        fontmono=full_path("files/font_mono.ttf"),
+    )
+    css_bg_template = Template(CSS_BACKGROUND)
+    css_bg = css_bg_template.substitute(path=full_path("files/bg_light.png"))
+    css_file = open_file("files/style.css")
+    css = css_bg + css_fonts + css_file
 
-        canvas = Image.alpha_composite(canvas, speech_image)
+    hti.screenshot(html_str=html, css_str=css, save_as=name)
 
-        speech_image_y += speech_size.height
+    im = Image.open(name)
+    pixels: PyAccess = im.load()
+    width, height = im.size
 
+    pixel = pixels[width - 1, 11]
+    real_width = width - 1
+    while pixel != (0, 0, 0, 255):
+        real_width -= 1
+        pixel = pixels[real_width, 11]
+
+    pixel = pixels[11, height - 1]
+    real_height = height - 1
+    while pixel != (0, 0, 0, 255):
+        if real_height == 0:
+            real_height = height
+            break
+
+        real_height -= 1
+        pixel = pixels[11, real_height]
+
+    canvas = Image.new("RGBA", (real_width, real_height), (0, 0, 0, 0))
+    canvas.paste(im)
     canvas.save(name)

@@ -2,8 +2,6 @@ import asyncio
 import os
 import traceback
 import sys
-import xxhash
-from datetime import datetime
 from os import getenv
 
 from aiogram import Dispatcher, Bot, types
@@ -11,11 +9,9 @@ from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
 from aiogram.types import BotCommand, Message, FSInputFile
 from aiogram.filters.command import Command
-from aiogram.enums.message_origin_type import MessageOriginType
 
-from bot.types.Author import Author
-from bot.types.Message import Message as Msg
-from bot.types.Speech import Speech
+from bot.message import IncomingMessage
+from bot.speech import Speech
 
 from bot.draw import draw
 
@@ -35,114 +31,58 @@ async def _on_start(message: Message) -> None:
 
 
 @dispatcher.message(Command(BotCommand(command="q", description="Create quote")))
-async def _on_quote(incoming_message: Message) -> None:
-    reply = incoming_message.reply_to_message  # storing it b/c aiogram is retarded
+async def _on_quote(q_message: Message) -> None:
+    reply = q_message.reply_to_message  # storing it b/c aiogram is retarded
     if not reply:
-        await _on_start(incoming_message)
+        await _on_start(q_message)
         return
 
     # not supposed to happen
     if not history:
-        await _on_start(incoming_message)
+        await _on_start(q_message)
         return
 
-    data = []
+    speeches: list[Speech] = []
     last_user_id = 0
-    for key, message in history[incoming_message.chat.id].items():
+    for key, message in history[q_message.chat.id].items():
         if key < reply.message_id:
             continue
 
-        user_id = 0
-        firstname = ""
-        lastname = ""
-        message_datetime = datetime.now()
-        pfp: str | None = None
-        if message.forward_origin:
-            if message.forward_origin.type == MessageOriginType.HIDDEN_USER:
-                # hidden user doesn't provide id :^(
-                user_id = xxhash.xxh32_intdigest(
-                    message.forward_origin.sender_user_name
-                )
-                name = message.forward_origin.sender_user_name.split()
-                firstname = name[0]
-                lastname = " ".join(name[1:])
-            else:
-                user_id = message.forward_origin.sender_user.id
-                firstname = message.forward_origin.sender_user.first_name
-                lastname = message.forward_origin.sender_user.last_name
+        incoming_message = await IncomingMessage().create(message)
 
-                pfps = await bot.get_user_profile_photos(user_id)
-                if pfps.total_count > 0:
-                    pfp = pfps.photos[0][0].file_id
-                else:
-                    pfp = None
-
-            message_datetime = message.forward_origin.date
+        if last_user_id == incoming_message.author_id:
+            speeches[-1].messages.append(incoming_message)
         else:
-            user_id = message.from_user.id
-            firstname = message.from_user.first_name
-            lastname = message.from_user.last_name
-            message_datetime = message.date
+            speeches.append(Speech([incoming_message]))
 
-        reply_text = ""
-        if message.reply_to_message:
-            reply_text = message.reply_to_message.md_text
-
-        if last_user_id == user_id:
-            data[-1].messages.append(
-                Msg(message, message.md_text, reply_text, message_datetime)
-            )
-        else:
-            if len(data) > 0 and data[-1]:
-                data[-1].messages[-1].last = True
-
-            author = Author(user_id, firstname, lastname)
-            data.append(
-                Speech(
-                    author,
-                    pfp,
-                    [
-                        Msg(
-                            message,
-                            message.md_text,
-                            reply_text,
-                            message_datetime,
-                            header=author.full_name,
-                        )
-                    ],
-                )
-            )
-
-        last_user_id = user_id
-
-    data[-1].messages[-1].last = True
+        last_user_id = incoming_message.author_id
 
     messages_empty = False
-    for speech in data:
+    for speech in speeches:
         if not speech.messages:
             messages_empty = True
             break
 
     # not supposed to happen
-    if not data or messages_empty:
-        await incoming_message.reply("Something went wrong. Try again later.")
+    if not speeches or messages_empty:
+        await q_message.reply("Something went wrong. Try again later.")
         return
 
-    file_name = f"{incoming_message.chat.id}.png"
+    file_name = f"{q_message.chat.id}.png"
 
     try:
-        draw(data, file_name)
-        await incoming_message.reply_photo(FSInputFile(file_name))
+        draw(speeches, file_name)
+        await q_message.reply_photo(FSInputFile(file_name))
     except:
         if getenv("DEBUG"):
-            await incoming_message.reply(traceback.format_exc())
+            await q_message.reply(traceback.format_exc())
         else:
             print(traceback.format_exc(), file=sys.stderr)
     finally:
         if os.path.exists(file_name):
             os.remove(file_name)
 
-        history[incoming_message.chat.id].clear()
+        history[q_message.chat.id].clear()
 
 
 @dispatcher.message()
