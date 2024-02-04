@@ -162,6 +162,7 @@ cython_debug/
 # test data
 test.png
 test*.png
+web/
 
 # telegram
 *.session

@@ -1,130 +1,166 @@
-from PIL import Image, ImageDraw, ImageFont
-from pilmoji import Pilmoji
+from datetime import datetime, timezone
+from string import Template
+from typing import Tuple
 
-from bot.constants import (
-    TEXT_REG_FONT,
-    MARGIN,
-    TOTAL_MARGIN,
-    PFP_WIDTH,
-    TEXT_FONT_SIZE,
-    RGBA_ZERO,
-    FILES_PATH,
-)
-from bot.text import get_text_size, draw_md_text, draw_reply, get_reply_width
-from bot.types.Message import Message
-from bot.types.Point import Point
-from bot.types.RGB import RGB
-from bot.types.Size import Size
+import xxhash
+from aiogram.enums import MessageOriginType
+from aiogram.types import Message
 
-TIME_FONT_SIZE = 16
-TIME_FONT = ImageFont.truetype(f"{FILES_PATH}/font_regular.ttf", TIME_FONT_SIZE)
+from bot.color import get_color
 
-
-def get_message_size(message: Message, is_first: bool) -> Size:
-    text_size = get_text_size(message.text, TEXT_REG_FONT)
-    time_size = get_text_size(message.time, TEXT_REG_FONT)
-
-    width = text_size.width + TOTAL_MARGIN + TOTAL_MARGIN + time_size.width + MARGIN
-    height = text_size.height + int(time_size.height / 2)
-
-    if not is_first:
-        height += MARGIN
-
-    if message.reply_text:
-        height += TEXT_FONT_SIZE * 2 + MARGIN * 3
-
-    if message.is_first:
-        user_name_size = get_text_size(message.header, TEXT_REG_FONT)
-        user_name_width = user_name_size.width + TOTAL_MARGIN + TOTAL_MARGIN
-
-        if user_name_width > width:
-            width = user_name_width
-        height += user_name_size.height + TOTAL_MARGIN
-
-    return Size(width, height)
+MESSAGE_HTML = """
+<div class="message">
+    <div class="content">
+        $header$reply<p>$content</p>
+    </div>
+    <div class="time">$time</div>
+</div>"""
+REPLY_HTML = """
+<div class="reply" style="border-left: 5px solid $color; background: rgba($r, $g, $b, 0.1);">
+    <header style="color: $color;">$header</header>
+    <p>$content</p>
+</div>"""
 
 
-def draw_message(
-    message: Message, canvas_size: Size, y: int, header_color: RGB, is_first: bool
-) -> Image:
-    message_size = get_message_size(message, is_first)
-    text_size = get_text_size(message.text, TEXT_REG_FONT)
-    canvas = Image.new("RGBA", (canvas_size.width, canvas_size.height), RGBA_ZERO)
-    d = ImageDraw.Draw(canvas)
-    pij = Pilmoji(canvas)
-
-    rectangle_y = y + message_size.height + MARGIN
-
-    width = message_size.width
-    if message.reply:
-        reply_width = get_reply_width(message.reply.fullname, message.reply.text) + TOTAL_MARGIN * 2
-        if reply_width > message_size.width:
-            width = reply_width
-    width += TOTAL_MARGIN + PFP_WIDTH
-
-    d.rounded_rectangle(
+class IncomingMessage(object):
+    @classmethod
+    async def create(cls, message: Message, is_first: bool = False):
+        self = cls()
         (
-            TOTAL_MARGIN * 2 + PFP_WIDTH,
-            y,
-            width,
-            rectangle_y,
-        ),
-        radius=5,
-        fill="#202123",
-        corners=(True, True, True, not message.is_last),
-    )
-    if message.is_last:
-        d.polygon(
-            [
-                (TOTAL_MARGIN * 2 + PFP_WIDTH, rectangle_y),
-                (TOTAL_MARGIN * 2 + PFP_WIDTH, rectangle_y - 8),
-                (TOTAL_MARGIN * 2 + PFP_WIDTH - 10, rectangle_y),
-            ],
-            fill="#202123",
+            self.author_id,
+            self.first_name,
+            self.last_name,
+            self.text,
+            self.time,
+            self.pfp,
+        ) = await IncomingMessage._get_data(message)
+        self.is_first = is_first
+
+        if message.reply_to_message:
+            (
+                self.reply_author_id,
+                first_name,
+                last_name,
+                self.reply_text,
+                _,
+                _,
+            ) = await IncomingMessage._get_data(message.reply_to_message)
+
+            if last_name:
+                self.reply_author_name = f"{first_name} {last_name}"
+            else:
+                self.reply_author_name = first_name
+
+        full_name = self.first_name
+        if self.last_name:
+            full_name += f" {self.last_name}"
+        self.full_name = full_name
+
+        initials = self.first_name[0]
+        if self.last_name:
+            initials += self.last_name[0]
+        self.initials = initials
+
+        return self
+
+    author_id: int
+    first_name: str
+    last_name: str | None = None
+    full_name: str
+    initials: str
+    text: str
+    reply_text: str | None = None
+    reply_author_id: int | None = None
+    reply_author_name: str | None = None
+    time: str
+    pfp: str | None = None
+    is_first: bool = False
+
+    @staticmethod
+    async def _get_avatar(message: Message, user_id: int) -> str | None:
+        pfps = await message.bot.get_user_profile_photos(user_id)
+        pfp: str | None = None
+
+        # if pfps.total_count > 0:
+        #     file_name = f"{user_id}.png"
+        #     await message.bot.download_file(pfps.photos[0][0].file_id, file_name)
+        #     pfp = f"""<img class="avatar" src="{full_path(file_name)}" alt="avatar"/>"""
+
+        return pfp
+
+    @staticmethod
+    async def _get_data(
+        message: Message,
+    ) -> Tuple[int, str, str | None, str, str, str]:
+        user_id: int
+        first_name: str
+        last_name: str | None = None
+        message_datetime: datetime
+        pfp: str | None = None
+
+        if message.forward_origin:
+            if message.forward_origin.type == MessageOriginType.HIDDEN_USER:
+                # hidden user doesn't provide id :^(
+                user_id = xxhash.xxh32_intdigest(
+                    message.forward_origin.sender_user_name
+                )
+                name = message.forward_origin.sender_user_name.split()
+                first_name = name[0]
+                if name[1:] is not None and name[1:] != "":
+                    last_name = " ".join(name[1:])
+            else:
+                user_id = message.forward_origin.sender_user.id
+                first_name = message.forward_origin.sender_user.first_name
+                if (
+                    message.forward_origin.sender_user.last_name is not None
+                    and message.forward_origin.sender_user.last_name != ""
+                ):
+                    last_name = message.forward_origin.sender_user.last_name
+
+                pfp = await IncomingMessage._get_avatar(message, user_id)
+
+            message_datetime = message.forward_origin.date
+        else:
+            user_id = message.from_user.id
+            first_name = message.from_user.first_name
+            if (
+                message.from_user.last_name is not None
+                and message.from_user.last_name != ""
+            ):
+                last_name = message.from_user.last_name
+            message_datetime = message.date
+
+            pfp = await IncomingMessage._get_avatar(message, user_id)
+
+        return (
+            user_id,
+            first_name,
+            last_name,
+            message.html_text,
+            message_datetime.replace(tzinfo=timezone.utc).strftime("%H:%M"),
+            pfp,
         )
 
-    text_y = y + MARGIN
+    def draw(self) -> str:
+        str_template = Template(MESSAGE_HTML)
 
-    if message.is_first:
-        pij.text(
-            (TOTAL_MARGIN * 2 + MARGIN + PFP_WIDTH, y + MARGIN),
-            message.header,
-            fill=header_color.value,
-            font=TEXT_REG_FONT,
+        header = ""
+        if self.is_first:
+            header = f"""<header style="color: {get_color(self.author_id).primary.hex};">{self.full_name}</header>"""
+
+        reply = ""
+        if self.reply_text:
+            color=get_color(self.reply_author_id).primary
+            reply_template = Template(REPLY_HTML)
+            reply = reply_template.substitute(
+                header=self.reply_author_name,
+                content=self.reply_text,
+                color=color.hex,
+                r=color.red,
+                g=color.green,
+                b=color.blue,
+            )
+
+        return str_template.substitute(
+            header=header, reply=reply, content=self.text, time=self.time
         )
-        text_y += TEXT_FONT_SIZE + MARGIN
-
-    time_y = rectangle_y - TOTAL_MARGIN - int(TIME_FONT_SIZE / 2)
-    if message.reply:
-        time_y += MARGIN
-    d.text(
-        (
-            TOTAL_MARGIN * 2 + MARGIN * 2 + PFP_WIDTH + text_size.width,
-            time_y,
-        ),
-        message.time,
-        fill="grey",
-        font=TIME_FONT,
-    )
-
-    if message.reply:
-        reply = draw_reply(
-            message.reply.fullname,
-            message.reply.text,
-            canvas_size,
-            Point(TOTAL_MARGIN * 2 + MARGIN + PFP_WIDTH, text_y),
-            header_color.value,
-        )
-        canvas = Image.alpha_composite(canvas, reply)
-
-        text_y += TEXT_FONT_SIZE * 4 + MARGIN
-
-    text_image = draw_md_text(
-        message.text,
-        TEXT_FONT_SIZE,
-        Point(TOTAL_MARGIN * 2 + MARGIN + PFP_WIDTH, text_y),
-        canvas_size,
-    )
-    canvas = Image.alpha_composite(canvas, text_image)
-
-    return canvas
