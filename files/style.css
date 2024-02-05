@@ -14,7 +14,6 @@ div {
 }
 
 header {
-    /*filter: blur(10px);*/
     margin-bottom: 5px;
     font-weight: 500;
 }
@@ -47,7 +46,6 @@ p {
 
 .message {
     display: flex;
-    background: white;
     padding: 10px;
     position: relative;
     border-radius: 10px;
@@ -114,17 +112,6 @@ blockquote {
     padding: 10px;
 }
 
-/*blockquote::after {*/
-/*    content: "";*/
-/*    display: inline-block;*/
-/*    height: 25px;*/
-/*    width: 25px;*/
-/*    background-size: 25px 25px;*/
-/*    background-image: url("./quote.svg");*/
-/*    background-repeat: no-repeat;*/
-/*    margin-left: 10px;*/
-/*}*/
-
 pre {
     font-family: Noto Mono;
     border-radius: 5px  10px 10px 5px;
@@ -134,10 +121,3 @@ pre {
     width: fit-content;
     padding: 10px;
 }
-
-/*.avatar > p {*/
-/*    color: white;*/
-/*    font-weight: 550;*/
-/*    text-align: center;*/
-/*    vertical-align: middle;*/
-/*}*/

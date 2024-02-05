@@ -2,6 +2,7 @@ from string import Template
 
 from PIL import Image, PyAccess
 
+from bot.params import Params, Theme
 from bot.speech import Speech
 from bot.utils import open_file, full_path
 
@@ -29,13 +30,22 @@ CSS_FONTS = """
     src: url("$fontmono");
 }
 """
-CSS_BACKGROUND = """
+CSS_THEME = """
 .speeches { 
   background: url("$path");
+}
+
+.message {
+    background: $bgcolor;
+    color: $color;
+}
+
+.tail > path {
+    fill: $bgcolor;
 }"""
 
 
-def draw(speeches: list[Speech], name: str) -> None:
+def draw(speeches: list[Speech], name: str, params: Params) -> None:
     from html2image import Html2Image
 
     hti = Html2Image()
@@ -52,10 +62,16 @@ def draw(speeches: list[Speech], name: str) -> None:
         fontregular=full_path("files/font_regular.ttf"),
         fontmono=full_path("files/font_mono.ttf"),
     )
-    css_bg_template = Template(CSS_BACKGROUND)
-    css_bg = css_bg_template.substitute(path=full_path("files/bg_light.png"))
+    css_bg_template = Template(CSS_THEME)
+    if params.theme == Theme.LIGHT:
+        css_bg = css_bg_template.substitute(path=full_path("files/bg_light.png"), bgcolor="white", color="black")
+    else:
+        css_bg = css_bg_template.substitute(path=full_path("files/bg_dark.png"), bgcolor="#202123", color="white")
     css_file = open_file("files/style.css")
     css = css_bg + css_fonts + css_file
+    if params.is_anon:
+        css_anon = open_file("files/anon.css")
+        css += css_anon
 
     hti.screenshot(html_str=html, css_str=css, save_as=name)
 
@@ -69,7 +85,7 @@ def draw(speeches: list[Speech], name: str) -> None:
         real_width -= 1
         pixel = pixels[real_width, 11]
 
-    pixel = pixels[11, height - 1]
+    pixel = pixels[60, height - 1]
     real_height = height - 1
     while pixel != (0, 0, 0, 255):
         if real_height == 0:
@@ -77,7 +93,7 @@ def draw(speeches: list[Speech], name: str) -> None:
             break
 
         real_height -= 1
-        pixel = pixels[11, real_height]
+        pixel = pixels[60, real_height]
 
     canvas = Image.new("RGBA", (real_width, real_height), (0, 0, 0, 0))
     canvas.paste(im)
