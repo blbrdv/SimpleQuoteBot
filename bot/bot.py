@@ -1,5 +1,6 @@
 import asyncio
 import os
+import shutil
 import traceback
 import sys
 from os import getenv
@@ -14,6 +15,7 @@ from bot.message import IncomingMessage
 from bot.speech import Speech
 
 from bot.draw import draw
+from bot.utils import full_path
 
 dispatcher = Dispatcher()
 bot = Bot(getenv("BOT_TOKEN"), parse_mode=ParseMode.MARKDOWN)
@@ -81,6 +83,9 @@ async def _on_quote(q_message: Message) -> None:
     finally:
         if os.path.exists(file_name):
             os.remove(file_name)
+
+        if os.path.exists(full_path("temp")):
+            shutil.rmtree(full_path("temp"))
 
         history[q_message.chat.id].clear()
 

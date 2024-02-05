@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timezone
 from string import Template
 from typing import Tuple
@@ -7,6 +8,7 @@ from aiogram.enums import MessageOriginType
 from aiogram.types import Message
 
 from bot.color import get_color
+from bot.utils import full_path
 
 MESSAGE_HTML = """
 <div class="message">
@@ -78,13 +80,17 @@ class IncomingMessage(object):
 
     @staticmethod
     async def _get_avatar(message: Message, user_id: int) -> str | None:
-        pfps = await message.bot.get_user_profile_photos(user_id)
+        pfps = await message.bot.get_user_profile_photos(user_id, limit=1)
         pfp: str | None = None
 
-        # if pfps.total_count > 0:
-        #     file_name = f"{user_id}.png"
-        #     await message.bot.download_file(pfps.photos[0][0].file_id, file_name)
-        #     pfp = f"""<img class="avatar" src="{full_path(file_name)}" alt="avatar"/>"""
+        if pfps.total_count > 0:
+            if not os.path.exists("temp"):
+                os.makedirs("temp")
+            file_name = f"temp/{user_id}.png"
+
+            pfp_file = await message.bot.get_file(pfps.photos[0][0].file_id)
+            await message.bot.download_file(pfp_file.file_path, file_name)
+            pfp = f"""<img class="avatar" src="{full_path(file_name)}" alt="avatar"/>"""
 
         return pfp
 

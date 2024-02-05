@@ -167,3 +167,6 @@ web/
 # telegram
 *.session
 *.session-journal
+
+# avatars
+temp
