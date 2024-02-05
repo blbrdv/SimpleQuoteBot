@@ -7,7 +7,7 @@ SPEECH_HTML = """
 <div class="speech">
     $avatar
     <svg class="tail">
-        <path d="M 0,15 15,15 15,0 M 15,0 C 15,4 4,15 0,15" fill="white"/>
+        <path d="M 0,15 15,15 15,0 M 15,0 C 15,4 4,15 0,15" />
     </svg>
     <div class="messages">
         $content

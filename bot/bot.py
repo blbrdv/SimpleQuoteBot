@@ -12,13 +12,14 @@ from aiogram.types import BotCommand, Message, FSInputFile
 from aiogram.filters.command import Command
 
 from bot.message import IncomingMessage
+from bot.params import Theme, Params
 from bot.speech import Speech
 
 from bot.draw import draw
 from bot.utils import full_path
 
 dispatcher = Dispatcher()
-bot = Bot(getenv("BOT_TOKEN"), parse_mode=ParseMode.MARKDOWN)
+tgbot = Bot(getenv("BOT_TOKEN"), parse_mode=ParseMode.MARKDOWN)
 history = {}
 
 
@@ -43,6 +44,13 @@ async def _on_quote(q_message: Message) -> None:
     if not history:
         await _on_start(q_message)
         return
+
+    params_raw = q_message.text.split(" ")[1:]
+    theme: Theme = Theme.LIGHT
+    if "dark" in params_raw:
+        theme = Theme.DARK
+    is_anon = "anon" in params_raw
+    params = Params(theme, is_anon)
 
     speeches: list[Speech] = []
     last_user_id = 0
@@ -73,7 +81,7 @@ async def _on_quote(q_message: Message) -> None:
     file_name = f"{q_message.chat.id}.png"
 
     try:
-        draw(speeches, file_name)
+        draw(speeches, file_name, params)
         await q_message.reply_photo(FSInputFile(file_name))
     except:
         if getenv("DEBUG"):
@@ -108,7 +116,7 @@ async def _on_message(message: types.Message) -> None:
 
 async def _start_bot() -> None:
     print("(Press Ctrl+C to stop this)")
-    await dispatcher.start_polling(bot)
+    await dispatcher.start_polling(tgbot)
 
 
 def main() -> None:

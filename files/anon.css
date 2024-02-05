@@ -1,0 +1,7 @@
+header {
+    filter: blur(8px);
+}
+
+.avatar {
+    filter: blur(8px);
+}
