@@ -109,13 +109,7 @@ async def _on_message(message: types.Message) -> None:
     except:
         history[message.chat.id] = {}
 
-    # temporary hack for saving memory
-    # TODO: remove when better hosting
-    if len(history[message.chat.id]) >= 50:
-        await message.reply("Too big request. Try to split your messages.")
-        history[message.chat.id] = {}
-    else:
-        history[message.chat.id][message.message_id] = message
+    history[message.chat.id][message.message_id] = message
 
 
 async def _start_bot() -> None:
