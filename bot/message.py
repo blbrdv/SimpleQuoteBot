@@ -115,15 +115,19 @@ class IncomingMessage(object):
                 if name[1:] is not None and name[1:] != "":
                     last_name = " ".join(name[1:])
             else:
-                user_id = message.forward_origin.sender_user.id
-                first_name = message.forward_origin.sender_user.first_name
-                if (
-                    message.forward_origin.sender_user.last_name is not None
-                    and message.forward_origin.sender_user.last_name != ""
-                ):
-                    last_name = message.forward_origin.sender_user.last_name
+                if message.forward_origin.type == MessageOriginType.CHANNEL:
+                    user_id = message.forward_origin.chat.id
+                    first_name = message.forward_origin.chat.full_name
+                else:
+                    user_id = message.forward_origin.sender_user.id
+                    first_name = message.forward_origin.sender_user.first_name
+                    if (
+                        message.forward_origin.sender_user.last_name is not None
+                        and message.forward_origin.sender_user.last_name != ""
+                    ):
+                        last_name = message.forward_origin.sender_user.last_name
 
-                pfp = await IncomingMessage._get_avatar(message, user_id)
+                    pfp = await IncomingMessage._get_avatar(message, user_id)
 
             message_datetime = message.forward_origin.date
         else:
