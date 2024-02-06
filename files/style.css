@@ -18,6 +18,13 @@ header {
     font-weight: 500;
 }
 
+.photo {
+    border-radius: 10px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    width: 100%;
+}
+
 p {
     margin: 0 50px 0 0;
 }
@@ -90,6 +97,7 @@ p {
     text-align: right;
     font-size: 18px;
     color: gray;
+    margin-top: 2px;
 }
 
 code {

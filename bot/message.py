@@ -4,7 +4,7 @@ from string import Template
 from typing import Tuple
 
 import xxhash
-from aiogram.enums import MessageOriginType
+from aiogram.enums import MessageOriginType, ContentType
 from aiogram.types import Message
 
 from bot.color import get_color
@@ -13,7 +13,7 @@ from bot.utils import full_path
 MESSAGE_HTML = """
 <div class="message">
     <div class="content">
-        $header$reply<p>$content</p>
+        $header$reply$additional<p>$content</p>
     </div>
     <div class="time">$time</div>
 </div>"""
@@ -63,6 +63,10 @@ class IncomingMessage(object):
             initials += self.last_name[0]
         self.initials = initials
 
+        if message.content_type == ContentType.PHOTO:
+            file_name = await IncomingMessage._download_file(message, message.photo[-1].file_id)
+            self.photo = full_path(file_name)
+
         return self
 
     author_id: int
@@ -71,6 +75,7 @@ class IncomingMessage(object):
     full_name: str
     initials: str
     text: str
+    photo: str | None = None
     reply_text: str | None = None
     reply_author_id: int | None = None
     reply_author_name: str | None = None
@@ -84,12 +89,7 @@ class IncomingMessage(object):
         pfp: str | None = None
 
         if pfps.total_count > 0:
-            if not os.path.exists("temp"):
-                os.makedirs("temp")
-            file_name = f"temp/{user_id}.png"
-
-            pfp_file = await message.bot.get_file(pfps.photos[0][0].file_id)
-            await message.bot.download_file(pfp_file.file_path, file_name)
+            file_name = await IncomingMessage._download_file(message, pfps.photos[0][0].file_id)
             pfp = f"""<img class="avatar" src="{full_path(file_name)}" alt="avatar"/>"""
 
         return pfp
@@ -147,6 +147,17 @@ class IncomingMessage(object):
             pfp,
         )
 
+    @staticmethod
+    async def _download_file(message: Message, file_id: str) -> str:
+        if not os.path.exists("temp"):
+            os.makedirs("temp")
+        file_name = f"temp/{file_id}.png"
+
+        file_path = await message.bot.get_file(file_id)
+        await message.bot.download_file(file_path.file_path, file_name)
+
+        return file_name
+
     def draw(self) -> str:
         str_template = Template(MESSAGE_HTML)
 
@@ -167,6 +178,10 @@ class IncomingMessage(object):
                 b=color.blue,
             )
 
+        additional = ""
+        if self.photo:
+            additional = f"""<img class="photo" src="{self.photo}"/>"""
+
         return str_template.substitute(
-            header=header, reply=reply, content=self.text, time=self.time
+            header=header, reply=reply, additional=additional, content=self.text, time=self.time
         )
