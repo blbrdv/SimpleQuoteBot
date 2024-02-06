@@ -62,7 +62,7 @@ async def _on_quote(q_message: Message) -> None:
         if key < reply.message_id:
             continue
 
-        incoming_message = await IncomingMessage().create(message)
+        incoming_message = await IncomingMessage.create(message)
 
         if last_user_id == incoming_message.author_id:
             speeches[-1].messages.append(incoming_message)

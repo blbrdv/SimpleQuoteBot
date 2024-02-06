@@ -64,9 +64,13 @@ def draw(speeches: list[Speech], name: str, params: Params) -> None:
     )
     css_bg_template = Template(CSS_THEME)
     if params.theme == Theme.LIGHT:
-        css_bg = css_bg_template.substitute(path=full_path("files/bg_light.png"), bgcolor="white", color="black")
+        css_bg = css_bg_template.substitute(
+            path=full_path("files/bg_light.png"), bgcolor="white", color="black"
+        )
     else:
-        css_bg = css_bg_template.substitute(path=full_path("files/bg_dark.png"), bgcolor="#202123", color="white")
+        css_bg = css_bg_template.substitute(
+            path=full_path("files/bg_dark.png"), bgcolor="#202123", color="white"
+        )
     css_file = open_file("files/style.css")
     css = css_bg + css_fonts + css_file
     if params.is_anon:

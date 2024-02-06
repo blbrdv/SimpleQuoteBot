@@ -156,7 +156,7 @@ class IncomingMessage(object):
 
         reply = ""
         if self.reply_text:
-            color=get_color(self.reply_author_id).primary
+            color = get_color(self.reply_author_id).primary
             reply_template = Template(REPLY_HTML)
             reply = reply_template.substitute(
                 header=self.reply_author_name,
