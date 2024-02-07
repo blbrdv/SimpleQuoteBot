@@ -54,7 +54,6 @@ p {
 .message {
     display: flex;
     padding: 10px;
-    position: relative;
     border-radius: 10px;
     margin-bottom: 5px;
     min-width: 80px;
@@ -91,9 +90,7 @@ p {
 }
 
 .time {
-    position: absolute;
-    bottom: 0;
-    right: 10px;
+    margin-right: 10px;
     text-align: right;
     font-size: 18px;
     color: gray;

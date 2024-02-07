@@ -13,9 +13,8 @@ from bot.utils import full_path
 MESSAGE_HTML = """
 <div class="message">
     <div class="content">
-        $header$reply$additional<p>$content</p>
+        $header$reply$additional<p>$content</p><p class="time">$time</p>
     </div>
-    <div class="time">$time</div>
 </div>"""
 REPLY_HTML = """
 <div class="reply" style="border-left: 5px solid $color; background: rgba($r, $g, $b, 0.1);">
