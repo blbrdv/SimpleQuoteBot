@@ -1,7 +1,7 @@
 import os
 from datetime import datetime, timezone
 from string import Template
-from typing import Tuple
+from typing import Tuple, Optional
 
 import xxhash
 from aiogram.enums import MessageOriginType, ContentType
@@ -19,13 +19,15 @@ MESSAGE_HTML = """
 REPLY_HTML = """
 <div class="reply" style="border-left: 5px solid $color; background: rgba($r, $g, $b, 0.1);">
     <header style="color: $color;">$header</header>
-    <p>$content</p>
+    <div class="header-content">
+        $image<p>$content</p>
+    </div>
 </div>"""
 
 
 class IncomingMessage(object):
     @classmethod
-    async def create(cls, message: Message, is_first: bool = False):
+    async def create(cls, message: Message):
         self = cls()
         (
             self.author_id,
@@ -35,7 +37,6 @@ class IncomingMessage(object):
             self.time,
             self.pfp,
         ) = await IncomingMessage._get_data(message)
-        self.is_first = is_first
 
         if message.reply_to_message:
             (
@@ -63,32 +64,36 @@ class IncomingMessage(object):
         self.initials = initials
 
         if message.content_type == ContentType.PHOTO:
-            file_name = await IncomingMessage._download_file(message, message.photo[-1].file_id)
+            file_name = await IncomingMessage._download_file(
+                message, message.photo[-1].file_id
+            )
             self.photo = full_path(file_name)
 
         return self
 
     author_id: int
     first_name: str
-    last_name: str | None = None
+    last_name: Optional[str] = None
     full_name: str
     initials: str
     text: str
-    photo: str | None = None
-    reply_text: str | None = None
-    reply_author_id: int | None = None
-    reply_author_name: str | None = None
+    photo: Optional[str] = None
+    reply_text: Optional[str] = None
+    reply_author_id: Optional[int] = None
+    reply_author_name: Optional[str] = None
     time: str
-    pfp: str | None = None
+    pfp: Optional[str] = None
     is_first: bool = False
 
     @staticmethod
-    async def _get_avatar(message: Message, user_id: int) -> str | None:
+    async def _get_avatar(message: Message, user_id: int) -> Optional[str]:
         pfps = await message.bot.get_user_profile_photos(user_id, limit=1)
-        pfp: str | None = None
+        pfp: Optional[str] = None
 
         if pfps.total_count > 0:
-            file_name = await IncomingMessage._download_file(message, pfps.photos[0][0].file_id)
+            file_name = await IncomingMessage._download_file(
+                message, pfps.photos[0][0].file_id
+            )
             pfp = f"""<img class="avatar" src="{full_path(file_name)}" alt="avatar"/>"""
 
         return pfp
@@ -96,12 +101,12 @@ class IncomingMessage(object):
     @staticmethod
     async def _get_data(
         message: Message,
-    ) -> Tuple[int, str, str | None, str, str, str]:
+    ) -> Tuple[int, str, Optional[str], str, str, str]:
         user_id: int
         first_name: str
-        last_name: str | None = None
+        last_name: Optional[str] = None
         message_datetime: datetime
-        pfp: str | None = None
+        pfp: Optional[str] = None
 
         if message.forward_origin:
             if message.forward_origin.type == MessageOriginType.HIDDEN_USER:
@@ -186,5 +191,9 @@ class IncomingMessage(object):
             additional = f"""<img class="photo" src="{self.photo}"/>"""
 
         return str_template.substitute(
-            header=header, reply=reply, additional=additional, content=self.text, time=self.time
+            header=header,
+            reply=reply,
+            additional=additional,
+            content=self.text,
+            time=self.time,
         )
