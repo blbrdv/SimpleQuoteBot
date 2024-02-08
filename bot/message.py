@@ -68,7 +68,7 @@ class IncomingMessage(object):
     initials: str
     text: str
     photo: Optional[str] = None
-    reply: Optional['IncomingMessage'] = None
+    reply: Optional["IncomingMessage"] = None
     time: str
     pfp: Optional[str] = None
     is_first: bool = False
