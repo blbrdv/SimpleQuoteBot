@@ -48,7 +48,7 @@ CSS_THEME = """
 def draw(speeches: list[Speech], name: str, params: Params) -> None:
     from html2image import Html2Image
 
-    hti = Html2Image()
+    hti = Html2Image(size=(514, 4000))
     html_template = Template(MAIN_HTML)
 
     content = ""
