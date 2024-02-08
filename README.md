@@ -37,6 +37,7 @@ A simple TG quote bot for generating quote screenshots from forwarded to private
 - Python 3
 - pip
 - black
+- env `BOT_TOKEN` - telegram bot token from Bot Father
 
 ## License
 Project licensed under [MIT License](/LICENSES/LICENSE).
