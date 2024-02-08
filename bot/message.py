@@ -18,9 +18,12 @@ MESSAGE_HTML = """
 </div>"""
 REPLY_HTML = """
 <div class="reply" style="border-left: 5px solid $color; background: rgba($r, $g, $b, 0.1);">
-    <header style="color: $color;">$header</header>
     <div class="header-content">
-        $image<p>$content</p>
+        $image
+        <div class="header-text">
+            <header style="color: $color;">$header</header>
+            <p>$content</p>
+        </div>
     </div>
 </div>"""
 
@@ -30,6 +33,7 @@ class IncomingMessage(object):
     async def create(cls, message: Message):
         self = cls()
         (
+            self.message_id,
             self.author_id,
             self.first_name,
             self.last_name,
@@ -37,21 +41,6 @@ class IncomingMessage(object):
             self.time,
             self.pfp,
         ) = await IncomingMessage._get_data(message)
-
-        if message.reply_to_message:
-            (
-                self.reply_author_id,
-                first_name,
-                last_name,
-                self.reply_text,
-                _,
-                _,
-            ) = await IncomingMessage._get_data(message.reply_to_message)
-
-            if last_name:
-                self.reply_author_name = f"{first_name} {last_name}"
-            else:
-                self.reply_author_name = first_name
 
         full_name = self.first_name
         if self.last_name:
@@ -71,6 +60,7 @@ class IncomingMessage(object):
 
         return self
 
+    message_id: int
     author_id: int
     first_name: str
     last_name: Optional[str] = None
@@ -78,9 +68,7 @@ class IncomingMessage(object):
     initials: str
     text: str
     photo: Optional[str] = None
-    reply_text: Optional[str] = None
-    reply_author_id: Optional[int] = None
-    reply_author_name: Optional[str] = None
+    reply: Optional['IncomingMessage'] = None
     time: str
     pfp: Optional[str] = None
     is_first: bool = False
@@ -101,7 +89,8 @@ class IncomingMessage(object):
     @staticmethod
     async def _get_data(
         message: Message,
-    ) -> Tuple[int, str, Optional[str], str, str, str]:
+    ) -> Tuple[int, int, str, Optional[str], str, str, str]:
+        message_id: int
         user_id: int
         first_name: str
         last_name: Optional[str] = None
@@ -133,8 +122,10 @@ class IncomingMessage(object):
 
                     pfp = await IncomingMessage._get_avatar(message, user_id)
 
+            message_id = message.message_id
             message_datetime = message.forward_origin.date
         else:
+            message_id = message.message_id
             user_id = message.from_user.id
             first_name = message.from_user.first_name
             if (
@@ -147,6 +138,7 @@ class IncomingMessage(object):
             pfp = await IncomingMessage._get_avatar(message, user_id)
 
         return (
+            message_id,
             user_id,
             first_name,
             last_name,
@@ -174,12 +166,21 @@ class IncomingMessage(object):
             header = f"""<header style="color: {get_color(self.author_id).primary.hex};">{self.full_name}</header>"""
 
         reply = ""
-        if self.reply_text:
-            color = get_color(self.reply_author_id).primary
+        if self.reply:
+            color = get_color(self.reply.author_id).primary
             reply_template = Template(REPLY_HTML)
+
+            content = self.reply.text
+            image = ""
+            if self.reply.photo:
+                image = f"""<img class="preview" src="{self.reply.photo}" />"""
+                if content == "":
+                    content = "Photo"
+
             reply = reply_template.substitute(
-                header=self.reply_author_name,
-                content=self.reply_text,
+                image=image,
+                header=self.reply.full_name,
+                content=content,
                 color=color.hex,
                 r=color.red,
                 g=color.green,

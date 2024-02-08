@@ -57,12 +57,20 @@ async def _on_quote(q_message: Message) -> None:
     params = Params(theme, is_anon)
 
     speeches: list[Speech] = []
+    messages: list[IncomingMessage] = []
     last_user_id = 0
     for key, message in history[q_message.chat.id].items():
         if key < reply.message_id:
             continue
 
         incoming_message = await IncomingMessage.create(message)
+
+        if message.reply_to_message:
+            for msg in messages:
+                if msg.message_id == message.reply_to_message.message_id:
+                    incoming_message.reply = msg
+
+        messages.append(incoming_message)
 
         if last_user_id == incoming_message.author_id:
             speeches[-1].messages.append(incoming_message)

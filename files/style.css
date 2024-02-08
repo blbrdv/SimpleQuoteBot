@@ -18,6 +18,24 @@ header {
     font-weight: 500;
 }
 
+.header-content {
+    display: flex;
+    flex-direction: row;
+}
+
+.header-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.preview {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+    margin-top: 5px;
+    border-radius: 10px;
+}
+
 .photo {
     border-radius: 10px;
     margin-right: 5px;
