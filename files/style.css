@@ -18,6 +18,31 @@ header {
     font-weight: 500;
 }
 
+.header-content {
+    display: flex;
+    flex-direction: row;
+}
+
+.header-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.preview {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+    margin-top: 5px;
+    border-radius: 10px;
+}
+
+.photo {
+    border-radius: 10px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    width: 100%;
+}
+
 p {
     margin: 0 50px 0 0;
 }
@@ -47,7 +72,6 @@ p {
 .message {
     display: flex;
     padding: 10px;
-    position: relative;
     border-radius: 10px;
     margin-bottom: 5px;
     min-width: 80px;
@@ -84,12 +108,11 @@ p {
 }
 
 .time {
-    position: absolute;
-    bottom: 0;
-    right: 10px;
+    margin-right: 10px;
     text-align: right;
     font-size: 18px;
     color: gray;
+    margin-top: 2px;
 }
 
 code {
