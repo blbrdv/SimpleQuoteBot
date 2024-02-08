@@ -13,5 +13,5 @@ jobs:
       - name: Test
         uses: psf/black@stable
         with:
-          options: "--diff"
+          options: "--check"
           src: "."
