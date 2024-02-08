@@ -1,7 +1,5 @@
 from string import Template
 
-from PIL import Image, PyAccess
-
 from bot.params import Params, Theme
 from bot.speech import Speech
 from bot.utils import open_file, full_path
