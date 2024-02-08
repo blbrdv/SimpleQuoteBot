@@ -1,3 +1,4 @@
+from os import getenv
 from string import Template
 
 from PIL import Image, PyAccess
@@ -48,7 +49,15 @@ CSS_THEME = """
 def draw(speeches: list[Speech], name: str, params: Params) -> None:
     from html2image import Html2Image
 
-    hti = Html2Image(size=(514, 4000))
+    hti = Html2Image(
+        size=(514, 4000),
+        custom_flags=[
+            "--disable-gpu",
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--headless=new",
+        ],
+    )
     html_template = Template(MAIN_HTML)
 
     content = ""
@@ -77,17 +86,7 @@ def draw(speeches: list[Speech], name: str, params: Params) -> None:
         css_anon = open_file("files/anon.css")
         css += css_anon
 
-    hti.screenshot(
-        html_str=html,
-        css_str=css,
-        save_as=name,
-    )
-    hti.browser.flags = [
-        "--disable-gpu",
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--headless=new",
-    ]
+    hti.screenshot(html_str=html, css_str=css, save_as=name)
 
     im = Image.open(name)
     pixels: PyAccess = im.load()
