@@ -5,9 +5,8 @@ A simple TG quote bot for generating quote screenshots from forwarded to private
 
 ## Current limitations:
 
-1. No avatars (for some reason)
-2. No data about hidden users (obv)
-3. Only text messages (rest is in TODO)
+1. No avatars for private profiles
+2. Only text and image messages (rest is in TODO)
 
 ## Usage
 
