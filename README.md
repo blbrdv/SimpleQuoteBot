@@ -29,6 +29,15 @@ A simple TG quote bot for generating quote screenshots from forwarded to private
 
 ![q_dark_anon](examples/q_dark_anon.jpg)
 
+## Develop
+
+### Requirements:
+
+- Chrome
+- Python 3
+- pip
+- black
+
 ## License
 Project licensed under [MIT License](/LICENSES/LICENSE).
 
