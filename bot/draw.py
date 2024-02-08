@@ -77,7 +77,17 @@ def draw(speeches: list[Speech], name: str, params: Params) -> None:
         css_anon = open_file("files/anon.css")
         css += css_anon
 
-    hti.screenshot(html_str=html, css_str=css, save_as=name)
+    hti.screenshot(
+        html_str=html,
+        css_str=css,
+        save_as=name,
+    )
+    hti.browser.flags = [
+        "--disable-gpu",
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--headless=new",
+    ]
 
     im = Image.open(name)
     pixels: PyAccess = im.load()
