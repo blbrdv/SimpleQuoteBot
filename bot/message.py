@@ -82,7 +82,9 @@ class IncomingMessage(object):
             file_name = await IncomingMessage._download_file(
                 message, pfps.photos[0][0].file_id
             )
-            pfp = f"""<img class="avatar" src="{full_path(file_name)}" alt="avatar" />"""
+            pfp = (
+                f"""<img class="avatar" src="{full_path(file_name)}" alt="avatar" />"""
+            )
 
         return pfp
 

@@ -13,7 +13,7 @@ class LoggerWriter:
     def write(self, message):
         # if statement reduces the amount of newlines that are
         # printed to the logger
-        if message != '\n':
+        if message != "\n":
             self.level(message)
 
     def flush(self):
@@ -28,10 +28,10 @@ class Logger:
     def __init__(self, name: str):
         self.log = logging.getLogger(name)
         if getenv("DEBUG"):
-            logging.basicConfig(filename='.log', encoding='utf-8', level=logging.DEBUG)
+            logging.basicConfig(filename=".log", encoding="utf-8", level=logging.DEBUG)
             sys.stdout = LoggerWriter(self.log.debug)
         else:
-            logging.basicConfig(filename='.log', encoding='utf-8', level=logging.INFO)
+            logging.basicConfig(filename=".log", encoding="utf-8", level=logging.INFO)
             sys.stdout = LoggerWriter(self.log.info)
         sys.stderr = LoggerWriter(self.log.warning)
 
