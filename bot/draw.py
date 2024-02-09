@@ -56,6 +56,8 @@ def draw(speeches: list[Speech], name: str, params: Params) -> None:
             "--no-sandbox",
             "--disable-setuid-sandbox",
             "--headless=new",
+            "--hide-scrollbars",
+            "--log-level=3",
         ],
     )
     html_template = Template(MAIN_HTML)

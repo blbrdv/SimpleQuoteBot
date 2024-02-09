@@ -16,6 +16,10 @@ div {
 header {
     margin-bottom: 5px;
     font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 422px;
 }
 
 .header-content {
@@ -44,7 +48,9 @@ header {
 }
 
 p {
-    margin: 0 50px 0 0;
+    margin: 0;
+    overflow-wrap: break-word;
+    max-width: 422px;
 }
 
 .speeches {
@@ -104,11 +110,11 @@ p {
     height: 15px;
     position: absolute;
     bottom: 5px;
-    left: 45px
+    left: 45px;
+    margin-bottom: 0;
 }
 
 .time {
-    margin-right: 10px;
     text-align: right;
     font-size: 18px;
     color: gray;
