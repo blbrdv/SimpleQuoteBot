@@ -11,6 +11,7 @@ from aiogram.filters import CommandStart
 from aiogram.types import BotCommand, Message, FSInputFile
 from aiogram.filters.command import Command
 
+from bot.logger import Logger
 from bot.message import IncomingMessage
 from bot.params import Theme, Params
 from bot.speech import Speech
@@ -20,6 +21,7 @@ from bot.utils import full_path
 
 dispatcher = Dispatcher()
 tgbot = Bot(getenv("BOT_TOKEN"), parse_mode=ParseMode.MARKDOWN)
+logger = Logger("bot")
 history = {}
 
 
@@ -35,6 +37,7 @@ async def _on_start(message: Message) -> None:
         " - `dark` - dark theme;\n"
         " - `anon` - hide avatars and names."
     )
+    logger.debug(f"Start replayed to {message.from_user.full_name}")
 
 
 @dispatcher.message(Command(BotCommand(command="q", description="Create quote")))
@@ -94,7 +97,9 @@ async def _on_quote(q_message: Message) -> None:
 
     try:
         draw(speeches, file_name, params)
+        logger.debug(f"Picture {file_name} drawn")
         await q_message.reply_photo(FSInputFile(file_name))
+        logger.debug(f"Picture {file_name} send")
     except:
         if getenv("DEBUG"):
             await q_message.reply(traceback.format_exc())
@@ -118,10 +123,11 @@ async def _on_message(message: types.Message) -> None:
         history[message.chat.id] = {}
 
     history[message.chat.id][message.message_id] = message
+    logger.debug(f"Message {message.message_id} saved")
 
 
 async def _start_bot() -> None:
-    print("(Press Ctrl+C to stop this)")
+    logger.info("Bot started (Press Ctrl+C to stop this)")
     await dispatcher.start_polling(tgbot)
 
 

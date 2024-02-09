@@ -2,9 +2,14 @@
 
 ## [0.6.3] - 2024-02-09
 
+### Added
+
+- Proper logging
+
 ### Fixed
 
 - Fonts
+- Text wrapping
 
 ## [0.6.2] - 2024-02-09
 
