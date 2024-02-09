@@ -16,6 +16,10 @@ div {
 header {
     margin-bottom: 5px;
     font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 422px;
 }
 
 .header-content {
