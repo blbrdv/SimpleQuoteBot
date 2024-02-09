@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.6.2] - 2024-02-09
+
+### Fixed
+
+Emoji drawing
+
+## [0.6.1] - 2024-02-08
+
+Minor fixes
+
 ## [0.6.0] - 2024-02-08
 
 ### Added
@@ -44,6 +54,8 @@ Implemented Markdown text drawing
 
 Initial release.
 
+[0.6.2]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.6.2
+[0.6.1]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.6.1
 [0.6.0]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.6.0
 [0.5.0]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.5.0
 [0.4.1]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.4.1
