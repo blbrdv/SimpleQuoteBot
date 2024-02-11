@@ -13,7 +13,7 @@ from bot.utils import full_path
 MESSAGE_HTML = """
 <div class="message">
     <div class="content">
-        $header$reply$additional<p>$content</p><p class="time">$time</p>
+        $header$additional$mediagroup$reply<p>$content</p><p class="time">$time</p>
     </div>
 </div>"""
 REPLY_HTML = """
@@ -26,6 +26,8 @@ REPLY_HTML = """
         </div>
     </div>
 </div>"""
+MEDIA_GROUP_HTML = """
+<div class="mediagroup" style="background: rgba($r, $g, $b, 0.1);">+$count files</div>"""
 
 
 class IncomingMessage(object):
@@ -68,6 +70,7 @@ class IncomingMessage(object):
     initials: str
     text: str
     photo: Optional[str] = None
+    media_group_count: int = 0
     reply: Optional["IncomingMessage"] = None
     time: str
     pfp: Optional[str] = None
@@ -193,10 +196,22 @@ class IncomingMessage(object):
         if self.photo:
             additional = f"""<img class="photo" src="{self.photo}" />"""
 
+        mediagroup = ""
+        if self.media_group_count > 0:
+            color = get_color(self.author_id).secondary
+            mediagroup_template = Template(MEDIA_GROUP_HTML)
+            mediagroup = mediagroup_template.substitute(
+                r=color.red,
+                g=color.green,
+                b=color.blue,
+                count=self.media_group_count
+            )
+
         return str_template.substitute(
             header=header,
-            reply=reply,
             additional=additional,
+            mediagroup=mediagroup,
+            reply=reply,
             content=self.text,
             time=self.time,
         )
