@@ -196,7 +196,9 @@ class IncomingMessage(object):
 
         mediagroup = ""
         if self.media_group_count > 0:
-            mediagroup = f"""<div class="mediagroup">+{self.media_group_count} photo</div>"""
+            mediagroup = (
+                f"""<div class="mediagroup">+{self.media_group_count} photo</div>"""
+            )
 
         return str_template.substitute(
             header=header,
