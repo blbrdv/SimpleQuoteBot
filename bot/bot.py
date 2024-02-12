@@ -138,7 +138,7 @@ async def _on_message(message: types.Message) -> None:
 
 
 async def _start_bot() -> None:
-    logger.info("Bot started (Press Ctrl+C to stop this)")
+    logger.info("Bot started (Press Ctrl+C to stop it)")
     await dispatcher.start_polling(tgbot)
 
 
