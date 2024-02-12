@@ -27,6 +27,11 @@ CSS_FONTS = """
 }
 
 @font-face {
+    font-family: "Noto Emoji";
+    src: url("$fontemoji");
+}
+
+@font-face {
     font-family: "Noto Mono";
     src: url("$fontmono");
 }
@@ -71,6 +76,7 @@ def draw(speeches: list[Speech], name: str, params: Params) -> None:
     css_font_template = Template(CSS_FONTS)
     css_fonts = css_font_template.substitute(
         fontregular=full_path("files/font_regular.ttf"),
+        fontemoji=full_path("files/font_emoji.ttf"),
         fontmono=full_path("files/font_mono.ttf"),
     )
     css_bg_template = Template(CSS_THEME)

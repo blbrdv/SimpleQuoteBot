@@ -1,6 +1,6 @@
 
 body {
-    font-family: "Noto Sans";
+    font-family: "Noto Sans", "Noto Emoji", serif;
     display: flex;
     flex-direction: column;
     background: green;
@@ -131,7 +131,7 @@ p {
 }
 
 code {
-    font-family: "Noto Mono";
+    font-family: "Noto Mono", monospace;
     background-color: chocolate;
     border-radius: 2px;
 }
