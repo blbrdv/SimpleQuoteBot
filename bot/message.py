@@ -26,8 +26,6 @@ REPLY_HTML = """
         </div>
     </div>
 </div>"""
-MEDIA_GROUP_HTML = """
-<div class="mediagroup" style="background: rgba($r, $g, $b, 0.1);">+$count files</div>"""
 
 
 class IncomingMessage(object):
@@ -198,14 +196,7 @@ class IncomingMessage(object):
 
         mediagroup = ""
         if self.media_group_count > 0:
-            color = get_color(self.author_id).secondary
-            mediagroup_template = Template(MEDIA_GROUP_HTML)
-            mediagroup = mediagroup_template.substitute(
-                r=color.red,
-                g=color.green,
-                b=color.blue,
-                count=self.media_group_count
-            )
+            mediagroup = f"""<div class="mediagroup">+{self.media_group_count} photo</div>"""
 
         return str_template.substitute(
             header=header,
