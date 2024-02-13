@@ -4,6 +4,7 @@ import shutil
 import traceback
 import sys
 from os import getenv
+from typing import Optional
 
 from aiogram import Dispatcher, Bot, types
 from aiogram.enums import ParseMode
@@ -62,9 +63,19 @@ async def _on_quote(q_message: Message) -> None:
     speeches: list[Speech] = []
     messages: list[IncomingMessage] = []
     last_user_id = 0
+    media_group_id: Optional[int] = None
     for key, message in history[q_message.chat.id].items():
         if key < reply.message_id:
             continue
+
+        if message.media_group_id:
+            if media_group_id == message.media_group_id:
+                messages[-1].media_group_count += 1
+                continue
+            else:
+                media_group_id = message.media_group_id
+        else:
+            media_group_id = None
 
         incoming_message = await IncomingMessage.create(message)
 
@@ -127,7 +138,7 @@ async def _on_message(message: types.Message) -> None:
 
 
 async def _start_bot() -> None:
-    logger.info("Bot started (Press Ctrl+C to stop this)")
+    logger.info("Bot started (Press Ctrl+C to stop it)")
     await dispatcher.start_polling(tgbot)
 
 

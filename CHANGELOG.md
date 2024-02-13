@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.6.4] - 2024-02-13
+
+### Added
+
+- Placeholder for unsupported message types
+
+### Fixed
+
+- Background stretching
+- Rendering grouped photos in different messages
+- Finally fixed font
+- Logger writing to stdout
+
 ## [0.6.3] - 2024-02-09
 
 ### Added
@@ -69,6 +82,8 @@
 
 _Initial release._
 
+[0.6.4]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.6.4
+[0.6.3]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.6.3
 [0.6.2]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.6.2
 [0.6.1]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.6.1
 [0.6.0]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.6.0

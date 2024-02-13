@@ -13,7 +13,7 @@ from bot.utils import full_path
 MESSAGE_HTML = """
 <div class="message">
     <div class="content">
-        $header$reply$additional<p>$content</p><p class="time">$time</p>
+        $header$additional$mediagroup$reply<p>$content</p><p class="time">$time</p>
     </div>
 </div>"""
 REPLY_HTML = """
@@ -52,11 +52,16 @@ class IncomingMessage(object):
             initials += self.last_name[0]
         self.initials = initials
 
-        if message.content_type == ContentType.PHOTO:
-            file_name = await IncomingMessage._download_file(
-                message, message.photo[-1].file_id
-            )
-            self.photo = full_path(file_name)
+        match message.content_type:
+            case ContentType.TEXT:
+                pass
+            case ContentType.PHOTO:
+                file_name = await IncomingMessage._download_file(
+                    message, message.photo[-1].file_id
+                )
+                self.photo = full_path(file_name)
+            case _:
+                self.unsupported_type = True
 
         return self
 
@@ -68,10 +73,12 @@ class IncomingMessage(object):
     initials: str
     text: str
     photo: Optional[str] = None
+    media_group_count: int = 0
     reply: Optional["IncomingMessage"] = None
     time: str
     pfp: Optional[str] = None
     is_first: bool = False
+    unsupported_type: bool = False
 
     @staticmethod
     async def _get_avatar(message: Message, user_id: int) -> Optional[str]:
@@ -192,11 +199,20 @@ class IncomingMessage(object):
         additional = ""
         if self.photo:
             additional = f"""<img class="photo" src="{self.photo}" />"""
+        elif self.unsupported_type:
+            additional = f"""<div class="warning">❌ Unsupported message type</div>"""
+
+        mediagroup = ""
+        if self.media_group_count > 0:
+            mediagroup = (
+                f"""<div class="mediagroup">+{self.media_group_count} photo</div>"""
+            )
 
         return str_template.substitute(
             header=header,
-            reply=reply,
             additional=additional,
+            mediagroup=mediagroup,
+            reply=reply,
             content=self.text,
             time=self.time,
         )

@@ -1,6 +1,6 @@
 
 body {
-    font-family: "Noto Sans";
+    font-family: "Noto Sans", "Noto Emoji", serif;
     display: flex;
     flex-direction: column;
     background: green;
@@ -59,6 +59,7 @@ p {
     border-bottom: 1px solid black;
     padding-left: 5px;
     padding-top: 5px;
+    background-size: 100% 100%;
 }
 
 .speech {
@@ -93,6 +94,22 @@ p {
     padding: 10px;
 }
 
+.mediagroup {
+    border-radius: 5px  10px 10px 5px;
+    margin: 5px 0 5px 0;
+    padding: 10px;
+    width: 100%;
+    background: rgba(108, 191, 98, 0.1);
+}
+
+.warning {
+    border-radius: 5px  10px 10px 5px;
+    margin: 5px 0 5px 0;
+    padding: 10px;
+    background: rgba(255, 0, 0, 0.1);
+    color: red;
+}
+
 .avatar {
     border-radius: 50px;
     width: 45px;
@@ -122,7 +139,7 @@ p {
 }
 
 code {
-    font-family: "Noto Mono";
+    font-family: "Noto Mono", monospace;
     background-color: chocolate;
     border-radius: 2px;
 }
