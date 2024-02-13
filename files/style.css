@@ -102,6 +102,14 @@ p {
     background: rgba(108, 191, 98, 0.1);
 }
 
+.warning {
+    border-radius: 5px  10px 10px 5px;
+    margin: 5px 0 5px 0;
+    padding: 10px;
+    background: rgba(255, 0, 0, 0.1);
+    color: red;
+}
+
 .avatar {
     border-radius: 50px;
     width: 45px;

@@ -52,11 +52,16 @@ class IncomingMessage(object):
             initials += self.last_name[0]
         self.initials = initials
 
-        if message.content_type == ContentType.PHOTO:
-            file_name = await IncomingMessage._download_file(
-                message, message.photo[-1].file_id
-            )
-            self.photo = full_path(file_name)
+        match message.content_type:
+            case ContentType.TEXT:
+                pass
+            case ContentType.PHOTO:
+                file_name = await IncomingMessage._download_file(
+                    message, message.photo[-1].file_id
+                )
+                self.photo = full_path(file_name)
+            case _:
+                self.unsupported_type = True
 
         return self
 
@@ -73,6 +78,7 @@ class IncomingMessage(object):
     time: str
     pfp: Optional[str] = None
     is_first: bool = False
+    unsupported_type: bool = False
 
     @staticmethod
     async def _get_avatar(message: Message, user_id: int) -> Optional[str]:
@@ -193,6 +199,8 @@ class IncomingMessage(object):
         additional = ""
         if self.photo:
             additional = f"""<img class="photo" src="{self.photo}" />"""
+        elif self.unsupported_type:
+            additional = f"""<div class="warning">❌ Unsupported message type</div>"""
 
         mediagroup = ""
         if self.media_group_count > 0:

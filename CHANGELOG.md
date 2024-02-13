@@ -1,6 +1,10 @@
 # Changelog
 
-## [0.6.4] - 2024-02-12
+## [0.6.4] - 2024-02-13
+
+### Added
+
+- Placeholder for unsupported message types
 
 ### Fixed
 
