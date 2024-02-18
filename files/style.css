@@ -140,8 +140,7 @@ p {
 
 code {
     font-family: "Noto Mono", monospace;
-    background-color: chocolate;
-    border-radius: 2px;
+    color: #60819c;
 }
 
 tg-spoiler {
@@ -159,11 +158,10 @@ blockquote {
 }
 
 pre {
-    font-family: Noto Mono;
     border-radius: 5px  10px 10px 5px;
-    background: rgba(86, 163, 115, 0.1);
+    background: rgba(96, 129, 156, 0.1);
     margin: 5px 0 5px 0;
-    border-left: 5px solid #56a373;
+    border-left: 5px solid #60819c;
     width: fit-content;
     padding: 10px;
 }
