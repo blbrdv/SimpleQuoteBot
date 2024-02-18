@@ -164,4 +164,7 @@ pre {
     border-left: 5px solid #60819c;
     width: fit-content;
     padding: 10px;
+    word-wrap: break-word;
+    white-space: normal;
+    max-width: 422px;
 }
