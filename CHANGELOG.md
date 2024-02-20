@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.0] - 2024-02-20
+
+### Fixed
+
+- Code block styles
+- Code block max width
+- Reply text limit length
+
 ## [0.6.4] - 2024-02-13
 
 ### Added
