@@ -19,7 +19,7 @@ header {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 422px;
+    max-width: 335px;
 }
 
 .header-content {
@@ -50,7 +50,14 @@ header {
 p {
     margin: 0;
     overflow-wrap: break-word;
-    max-width: 422px;
+    max-width: 404px;
+}
+
+.header-text > p {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 335px;
 }
 
 .speeches {
@@ -74,6 +81,7 @@ p {
     flex-direction: column;
     position: relative;
     margin-left: 60px;
+    max-width: 441px;
 }
 
 .message {
@@ -140,8 +148,7 @@ p {
 
 code {
     font-family: "Noto Mono", monospace;
-    background-color: chocolate;
-    border-radius: 2px;
+    color: #60819c;
 }
 
 tg-spoiler {
@@ -159,11 +166,13 @@ blockquote {
 }
 
 pre {
-    font-family: Noto Mono;
     border-radius: 5px  10px 10px 5px;
-    background: rgba(86, 163, 115, 0.1);
+    background: rgba(96, 129, 156, 0.1);
     margin: 5px 0 5px 0;
-    border-left: 5px solid #56a373;
+    border-left: 5px solid #60819c;
     width: fit-content;
     padding: 10px;
+    word-wrap: break-word;
+    white-space: normal;
+    max-width: 404px;
 }
