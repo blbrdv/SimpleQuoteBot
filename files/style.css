@@ -19,7 +19,7 @@ header {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 422px;
+    max-width: 335px;
 }
 
 .header-content {
@@ -36,7 +36,7 @@ header {
     width: 50px;
     height: 50px;
     margin-right: 10px;
-    margin-top: 5px;
+    margin-top: 0;
     border-radius: 10px;
 }
 
@@ -50,7 +50,14 @@ header {
 p {
     margin: 0;
     overflow-wrap: break-word;
-    max-width: 422px;
+    max-width: 404px;
+}
+
+.header-text > p {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 335px;
 }
 
 .speeches {
@@ -74,6 +81,7 @@ p {
     flex-direction: column;
     position: relative;
     margin-left: 60px;
+    max-width: 441px;
 }
 
 .message {
@@ -166,5 +174,5 @@ pre {
     padding: 10px;
     word-wrap: break-word;
     white-space: normal;
-    max-width: 422px;
+    max-width: 404px;
 }
