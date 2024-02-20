@@ -90,6 +90,7 @@
 
 _Initial release._
 
+[0.7.0]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.7.0
 [0.6.4]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.6.4
 [0.6.3]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.6.3
 [0.6.2]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.6.2
