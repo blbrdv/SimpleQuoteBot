@@ -1,11 +1,14 @@
 
 body {
-    font-family: "Noto Sans", "Noto Emoji", serif;
     display: flex;
     flex-direction: column;
-    background: green;
-    font-size: 20px;
+
     margin: 0;
+
+    font-family: "Noto Sans", "Noto Emoji", serif;
+    font-size: 20px;
+
+    background: green;
 }
 
 div {
@@ -14,12 +17,14 @@ div {
 }
 
 header {
-    margin-bottom: 5px;
-    font-weight: 500;
-    white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
+
     max-width: 335px;
+    margin-bottom: 5px;
+
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .header-content {
@@ -35,61 +40,67 @@ header {
 .preview {
     width: 50px;
     height: 50px;
-    margin-right: 10px;
     margin-top: 5px;
+    margin-right: 10px;
+
     border-radius: 10px;
 }
 
 .photo {
-    border-radius: 10px;
+    width: 100%;
     margin-right: 5px;
     margin-bottom: 5px;
-    width: 100%;
+    border-radius: 10px;
 }
 
 p {
+    max-width: 404px;
     margin: 0;
     overflow-wrap: break-word;
-    max-width: 404px;
 }
 
 .header-text > p {
-    white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
     max-width: 335px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .speeches {
     max-width: 512px;
+    padding-top: 5px;
+    padding-left: 5px;
+
+    background-size: 100% 100%;
     border-right: 1px solid black;
     border-bottom: 1px solid black;
-    padding-left: 5px;
-    padding-top: 5px;
-    background-size: 100% 100%;
 }
 
 .speech {
+    position: relative;
     display: flex;
     flex-direction: row;
-    position: relative;
     padding-right: 5px;
 }
 
 .messages {
+    position: relative;
+
     display: flex;
     flex-direction: column;
-    position: relative;
-    margin-left: 60px;
+
     max-width: 441px;
+    margin-left: 60px;
 }
 
 .message {
     display: flex;
-    padding: 10px;
-    border-radius: 10px;
-    margin-bottom: 5px;
+
     min-width: 80px;
+    margin-bottom: 5px;
+    padding: 10px;
+
+    border-radius: 10px;
 }
 
 .message:last-child {
@@ -97,53 +108,60 @@ p {
 }
 
 .reply {
-    border-radius: 5px  10px 10px 5px;
     margin: 5px 0 5px 0;
     padding: 10px;
+    border-radius: 5px  10px 10px 5px;
 }
 
 .mediagroup {
-    border-radius: 5px  10px 10px 5px;
+    width: 100%;
     margin: 5px 0 5px 0;
     padding: 10px;
-    width: 100%;
+
     background: rgba(108, 191, 98, 0.1);
+    border-radius: 5px  10px 10px 5px;
 }
 
 .warning {
-    border-radius: 5px  10px 10px 5px;
     margin: 5px 0 5px 0;
     padding: 10px;
-    background: rgba(255, 0, 0, 0.1);
+
     color: red;
+
+    background: rgba(255, 0, 0, 0.1);
+    border-radius: 5px  10px 10px 5px;
 }
 
 .avatar {
-    border-radius: 50px;
-    width: 45px;
-    height: 45px;
     position: absolute;
     bottom: 5px;
+
+    width: 45px;
+    height: 45px;
+
+    line-height: 45px;
     color: white;
     text-align: center;
     vertical-align: middle;
-    line-height: 45px;
+
+    border-radius: 50px;
 }
 
 .tail {
-    width: 15px;
-    height: 15px;
     position: absolute;
     bottom: 5px;
     left: 45px;
+
+    width: 15px;
+    height: 15px;
     margin-bottom: 0;
 }
 
 .time {
-    text-align: right;
+    margin-top: 2px;
     font-size: 18px;
     color: gray;
-    margin-top: 2px;
+    text-align: right;
 }
 
 code {
@@ -157,22 +175,25 @@ tg-spoiler {
 }
 
 blockquote {
-    border-radius: 5px  10px 10px 5px;
-    background: rgba(108, 191, 98, 0.1);
-    margin: 5px 0 5px 0;
-    border-left: 5px solid #6cbf62;
     width: fit-content;
+    margin: 5px 0 5px 0;
     padding: 10px;
+
+    background: rgba(108, 191, 98, 0.1);
+    border-left: 5px solid #6cbf62;
+    border-radius: 5px  10px 10px 5px;
 }
 
 pre {
-    border-radius: 5px  10px 10px 5px;
-    background: rgba(96, 129, 156, 0.1);
-    margin: 5px 0 5px 0;
-    border-left: 5px solid #60819c;
     width: fit-content;
+    max-width: 404px;
+    margin: 5px 0 5px 0;
     padding: 10px;
+
     word-wrap: break-word;
     white-space: normal;
-    max-width: 404px;
+
+    background: rgba(96, 129, 156, 0.1);
+    border-left: 5px solid #60819c;
+    border-radius: 5px  10px 10px 5px;
 }
