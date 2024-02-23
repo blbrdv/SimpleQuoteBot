@@ -3,14 +3,17 @@ import os
 import shutil
 import traceback
 import sys
+from multiprocessing import Process
 from os import getenv
-from typing import Optional
+from typing import Optional, Callable
 
 from aiogram import Dispatcher, Bot, types
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
 from aiogram.types import BotCommand, Message, FSInputFile
 from aiogram.filters.command import Command
+# from telethon import TelegramClient, events, sync
+from pyrogram import Client
 
 from bot.logger import Logger
 from bot.message import IncomingMessage
@@ -22,6 +25,8 @@ from bot.utils import full_path
 
 dispatcher = Dispatcher()
 tgbot = Bot(getenv("BOT_TOKEN"), parse_mode=ParseMode.MARKDOWN)
+# tgclient = TelegramClient('SimpleQuoteBot', int(getenv("API_ID")), getenv("API_HASH"))
+tgclient = Client("SimpleQuoteBot", int(getenv("API_ID")), getenv("API_HASH"))
 logger = Logger("bot")
 history = {}
 
@@ -77,6 +82,7 @@ async def _on_quote(q_message: Message) -> None:
         else:
             media_group_id = None
 
+        mmm = await tgclient.get_messages(message.chat.id, message.message_id)
         incoming_message = await IncomingMessage.create(message)
 
         if message.reply_to_message:
@@ -142,5 +148,22 @@ async def _start_bot() -> None:
     await dispatcher.start_polling(tgbot)
 
 
-def main() -> None:
-    asyncio.run(_start_bot())
+async def _start_client() -> None:
+    await tgclient.start()
+    await tgclient.stop()
+
+
+# def main() -> None:
+#     asyncio.get_event_loop().create_task(_start_bot())
+#     asyncio.get_event_loop().create_task(_start_client())
+#     asyncio.get_event_loop().run_forever()
+
+async def _a():
+    a= _start_bot()
+    b= _start_client()
+    done, _ = await asyncio.gather(a, b)
+    print ("done")
+
+
+def main():
+    asyncio.run(_a())

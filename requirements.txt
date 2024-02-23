@@ -2,3 +2,4 @@ aiogram==3.3.0
 xxhash==3.4.1
 html2image==2.0.4.3
 Pillow==10.2.0
+Pyrogram==2.0.106
