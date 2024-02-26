@@ -2,6 +2,7 @@ import os
 from datetime import datetime, timezone
 from string import Template
 from typing import Tuple, Optional
+from xml.etree import ElementTree as ET
 
 import xxhash
 from aiogram.enums import MessageOriginType, ContentType
@@ -151,7 +152,7 @@ class IncomingMessage(object):
             user_id,
             first_name,
             last_name,
-            message.html_text,
+            IncomingMessage._set_languages(message.html_text),
             message_datetime.replace(tzinfo=timezone.utc).strftime("%H:%M"),
             pfp,
         )
@@ -166,6 +167,20 @@ class IncomingMessage(object):
         await message.bot.download_file(file_path.file_path, file_name)
 
         return file_name
+
+    @staticmethod
+    def _set_languages(text: str) -> str:
+        root = ET.fromstring(f"<root>{text}</root>")
+        for pre in root.findall('pre'):
+            code = pre.find("code")
+
+            lang = code.attrib.get("class").replace("language-", "").replace("-", "")
+            language_name = ET.Element("p")
+            language_name.text = lang
+
+            pre.insert(0, language_name)
+
+        return ET.tostring(root, encoding='unicode')[6:-7]
 
     def draw(self) -> str:
         str_template = Template(MESSAGE_HTML)

@@ -13,7 +13,7 @@ MAIN_HTML = """
 <head>
     <meta charset="UTF-8">
     <title>Simple quotes</title>
-    <link href="$prismstyle" rel="stylesheet" /
+    <link href="$prismstyle" rel="stylesheet" />
 </head>
 <body>
     <div class="speeches">
