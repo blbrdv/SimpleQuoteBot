@@ -19,7 +19,7 @@ div {
 header {
     overflow: hidden;
 
-    max-width: 335px;
+    max-width: 591px;
     margin-bottom: 5px;
 
     font-weight: 500;
@@ -54,20 +54,20 @@ header {
 }
 
 p {
-    max-width: 404px;
+    max-width: 660px;
     margin: 0;
     overflow-wrap: break-word;
 }
 
 .header-text > p {
     overflow: hidden;
-    max-width: 335px;
+    max-width: 591px;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .speeches {
-    max-width: 512px;
+    max-width: 768px;
     padding-top: 5px;
     padding-left: 5px;
 
@@ -89,7 +89,7 @@ p {
     display: flex;
     flex-direction: column;
 
-    max-width: 441px;
+    max-width: 697px;
     margin-left: 60px;
 }
 
@@ -186,7 +186,7 @@ blockquote {
 
 pre {
     width: fit-content;
-    max-width: 404px;
+    max-width: 660px;
     margin: 5px 0 5px 0;
     padding: 10px;
 

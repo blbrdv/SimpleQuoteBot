@@ -57,7 +57,7 @@ def draw(speeches: list[Speech], name: str, params: Params) -> None:
     from html2image import Html2Image
 
     hti = Html2Image(
-        size=(525, 4000),
+        size=(781, 4000),
         custom_flags=[
             "--disable-gpu",
             "--no-sandbox",
