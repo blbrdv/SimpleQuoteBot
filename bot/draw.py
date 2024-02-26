@@ -13,11 +13,13 @@ MAIN_HTML = """
 <head>
     <meta charset="UTF-8">
     <title>Simple quotes</title>
+    <link href="$prismstyle" rel="stylesheet" /
 </head>
 <body>
     <div class="speeches">
         $content
     </div>
+    <script src="$prismscript"></script>
 </body>
 </html>"""
 CSS_FONTS = """
@@ -71,7 +73,11 @@ def draw(speeches: list[Speech], name: str, params: Params) -> None:
     for speech in speeches:
         content += speech.draw()
 
-    html = html_template.substitute(content=content)
+    html = html_template.substitute(
+        content=content,
+        prismstyle=full_path("files/prism.css"),
+        prismscript=full_path("files/prism.js"),
+    )
 
     css_font_template = Template(CSS_FONTS)
     css_fonts = css_font_template.substitute(
