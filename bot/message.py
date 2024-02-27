@@ -290,7 +290,7 @@ class Sticker(IncomingMessage):
             full_name = message.forward_origin.sender_user.full_name
             initials = message.forward_origin.sender_user.first_name[0]
             if message.forward_origin.sender_user.last_name:
-                initials += f" {message.forward_origin.sender_user.last_name[0]}"
+                initials += message.forward_origin.sender_user.last_name[0]
 
             if message.forward_origin.type != MessageOriginType.HIDDEN_USER:
                 pfp = await Bubble._get_avatar(message, author_id)
@@ -301,7 +301,7 @@ class Sticker(IncomingMessage):
 
             initials = message.from_user.first_name[0]
             if message.from_user.last_name:
-                initials += f" {message.from_user.last_name[0]}"
+                initials += message.from_user.last_name[0]
         self.author_id = author_id
         self.full_name = full_name
         self.pfp = pfp
