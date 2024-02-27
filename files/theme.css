@@ -1,0 +1,12 @@
+.speeches {
+  background: url("$path");
+}
+
+.message {
+    background: $bgcolor;
+    color: $color;
+}
+
+.tail > path {
+    fill: $bgcolor;
+}

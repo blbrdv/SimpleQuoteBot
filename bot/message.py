@@ -9,24 +9,7 @@ from aiogram.enums import MessageOriginType, ContentType
 from aiogram.types import Message
 
 from bot.color import get_color
-from bot.utils import full_path
-
-MESSAGE_HTML = """
-<div class="message">
-    <div class="content">
-        $header$additional$mediagroup$reply<p>$content</p><p class="time">$time</p>
-    </div>
-</div>"""
-REPLY_HTML = """
-<div class="reply" style="border-left: 5px solid $color; background: rgba($r, $g, $b, 0.1);">
-    <div class="header-content">
-        $image
-        <div class="header-text">
-            <header style="color: $color;">$header</header>
-            <p>$content</p>
-        </div>
-    </div>
-</div>"""
+from bot.utils import full_path, fill_template
 
 
 class IncomingMessage(object):
@@ -191,8 +174,6 @@ class IncomingMessage(object):
         return ET.tostring(root, encoding='unicode')[6:-7], reply_text
 
     def draw(self) -> str:
-        str_template = Template(MESSAGE_HTML)
-
         header = ""
         if self.is_first:
             header = f"""<header style="color: {get_color(self.author_id).primary.hex};">{self.full_name}</header>"""
@@ -200,8 +181,6 @@ class IncomingMessage(object):
         reply = ""
         if self.reply:
             color = get_color(self.reply.author_id).primary
-            reply_template = Template(REPLY_HTML)
-
             content = self.reply.text_for_reply
             image = ""
             if self.reply.photo:
@@ -209,7 +188,8 @@ class IncomingMessage(object):
                 if content == "":
                     content = "Photo"
 
-            reply = reply_template.substitute(
+            reply = fill_template(
+                full_path("files/reply.html"),
                 image=image,
                 header=self.reply.full_name,
                 content=content,
@@ -231,7 +211,8 @@ class IncomingMessage(object):
                 f"""<div class="mediagroup">+{self.media_group_count} photo</div>"""
             )
 
-        return str_template.substitute(
+        return fill_template(
+            full_path("files/message.html"),
             header=header,
             additional=additional,
             mediagroup=mediagroup,

@@ -1,0 +1,14 @@
+@font-face {
+    font-family: "Noto Sans";
+    src: url("$fontregular");
+}
+
+@font-face {
+    font-family: "Noto Emoji";
+    src: url("$fontemoji");
+}
+
+@font-face {
+    font-family: "Noto Mono";
+    src: url("$fontmono");
+}

@@ -2,17 +2,7 @@ from string import Template
 
 from bot.color import get_color
 from bot.message import IncomingMessage
-
-SPEECH_HTML = """
-<div class="speech">
-    $avatar
-    <svg class="tail">
-        <path d="M 0,15 15,15 15,0 M 15,0 C 15,4 4,15 0,15" />
-    </svg>
-    <div class="messages">
-        $content
-    </div>
-</div>"""
+from bot.utils import full_path, fill_template
 
 
 class Speech:
@@ -36,10 +26,8 @@ class Speech:
     messages: list[IncomingMessage]
 
     def draw(self) -> str:
-        str_template = Template(SPEECH_HTML)
-
         content = ""
         for message in self.messages:
             content += message.draw()
 
-        return str_template.substitute(content=content, avatar=self.pfp)
+        return fill_template(full_path("files/speech.html"), content=content, avatar=self.pfp)
