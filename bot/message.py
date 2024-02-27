@@ -38,10 +38,15 @@ class IncomingMessage(object):
             self.author_id,
             self.first_name,
             self.last_name,
-            self.text,
+            text,
             self.time,
             self.pfp,
         ) = await IncomingMessage._get_data(message)
+
+        (
+            self.text,
+            self.text_for_reply
+        ) = IncomingMessage._set_languages(text)
 
         full_name = self.first_name
         if self.last_name:
@@ -73,6 +78,7 @@ class IncomingMessage(object):
     full_name: str
     initials: str
     text: str
+    text_for_reply: str
     photo: Optional[str] = None
     media_group_count: int = 0
     reply: Optional["IncomingMessage"] = None
@@ -152,7 +158,7 @@ class IncomingMessage(object):
             user_id,
             first_name,
             last_name,
-            IncomingMessage._set_languages(message.html_text),
+            message.html_text,
             message_datetime.replace(tzinfo=timezone.utc).strftime("%H:%M"),
             pfp,
         )
@@ -169,8 +175,10 @@ class IncomingMessage(object):
         return file_name
 
     @staticmethod
-    def _set_languages(text: str) -> str:
+    def _set_languages(text: str) -> Tuple[str, str]:
         root = ET.fromstring(f"<root>{text}</root>")
+        reply_text = ET.tostring(root, encoding='unicode', method='text')
+
         for pre in root.findall('pre'):
             code = pre.find("code")
 
@@ -180,7 +188,7 @@ class IncomingMessage(object):
 
             pre.insert(0, language_name)
 
-        return ET.tostring(root, encoding='unicode')[6:-7]
+        return ET.tostring(root, encoding='unicode')[6:-7], reply_text
 
     def draw(self) -> str:
         str_template = Template(MESSAGE_HTML)
@@ -194,7 +202,7 @@ class IncomingMessage(object):
             color = get_color(self.reply.author_id).primary
             reply_template = Template(REPLY_HTML)
 
-            content = self.reply.text
+            content = self.reply.text_for_reply
             image = ""
             if self.reply.photo:
                 image = f"""<img class="preview" src="{self.reply.photo}" />"""
