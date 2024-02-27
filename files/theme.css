@@ -3,8 +3,8 @@
 }
 
 .message {
-    background: $bgcolor;
     color: $color;
+    background: $bgcolor;
 }
 
 .tail > path {

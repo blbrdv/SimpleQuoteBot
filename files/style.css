@@ -199,9 +199,9 @@ pre {
 }
 
 pre > p {
-    background: rgba(96, 129, 156, 0.35);
-    color: #60819c;
     padding-left: 10px;
+    color: #60819c;
+    background: rgba(96, 129, 156, 0.35);
 }
 
 pre > code {
