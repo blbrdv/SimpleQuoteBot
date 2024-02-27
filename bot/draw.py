@@ -1,61 +1,15 @@
-from os import getenv
-from string import Template
-
 from PIL import Image, PyAccess
 
 from bot.params import Params, Theme
 from bot.speech import Speech
-from bot.utils import open_file, full_path
-
-MAIN_HTML = """
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Simple quotes</title>
-</head>
-<body>
-    <div class="speeches">
-        $content
-    </div>
-</body>
-</html>"""
-CSS_FONTS = """
-@font-face {
-    font-family: "Noto Sans";
-    src: url("$fontregular");
-}
-
-@font-face {
-    font-family: "Noto Emoji";
-    src: url("$fontemoji");
-}
-
-@font-face {
-    font-family: "Noto Mono";
-    src: url("$fontmono");
-}
-"""
-CSS_THEME = """
-.speeches { 
-  background: url("$path");
-}
-
-.message {
-    background: $bgcolor;
-    color: $color;
-}
-
-.tail > path {
-    fill: $bgcolor;
-}"""
+from bot.utils import open_file, full_path, fill_template
 
 
 def draw(speeches: list[Speech], name: str, params: Params) -> None:
     from html2image import Html2Image
 
     hti = Html2Image(
-        size=(525, 4000),
+        size=(781, 4000),
         custom_flags=[
             "--disable-gpu",
             "--no-sandbox",
@@ -65,28 +19,37 @@ def draw(speeches: list[Speech], name: str, params: Params) -> None:
             "--log-level=3",
         ],
     )
-    html_template = Template(MAIN_HTML)
 
     content = ""
     for speech in speeches:
         content += speech.draw()
 
-    html = html_template.substitute(content=content)
+    html = fill_template(
+        full_path("files/main.html"),
+        content=content,
+        prismstyle=full_path("files/prism.css"),
+        prismscript=full_path("files/prism.js"),
+    )
 
-    css_font_template = Template(CSS_FONTS)
-    css_fonts = css_font_template.substitute(
+    css_fonts = fill_template(
+        full_path("files/fonts.css"),
         fontregular=full_path("files/font_regular.ttf"),
         fontemoji=full_path("files/font_emoji.ttf"),
         fontmono=full_path("files/font_mono.ttf"),
     )
-    css_bg_template = Template(CSS_THEME)
     if params.theme == Theme.LIGHT:
-        css_bg = css_bg_template.substitute(
-            path=full_path("files/bg_light.png"), bgcolor="white", color="black"
+        css_bg = fill_template(
+            full_path("files/theme.css"),
+            path=full_path("files/bg_light.png"),
+            bgcolor="white",
+            color="black",
         )
     else:
-        css_bg = css_bg_template.substitute(
-            path=full_path("files/bg_dark.png"), bgcolor="#202123", color="white"
+        css_bg = fill_template(
+            full_path("files/theme.css"),
+            path=full_path("files/bg_dark.png"),
+            bgcolor="#202123",
+            color="white",
         )
     css_file = open_file("files/style.css")
     css = css_bg + css_fonts + css_file

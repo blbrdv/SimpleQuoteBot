@@ -7,13 +7,14 @@ from os import getenv
 from typing import Optional
 
 from aiogram import Dispatcher, Bot, types
-from aiogram.enums import ParseMode
+from aiogram.enums import ParseMode, ContentType
 from aiogram.filters import CommandStart
 from aiogram.types import BotCommand, Message, FSInputFile
 from aiogram.filters.command import Command
 
+from bot.message import Bubble
 from bot.logger import Logger
-from bot.message import IncomingMessage
+from bot.message import IncomingMessage, Sticker
 from bot.params import Theme, Params
 from bot.speech import Speech
 
@@ -77,7 +78,10 @@ async def _on_quote(q_message: Message) -> None:
         else:
             media_group_id = None
 
-        incoming_message = await IncomingMessage.create(message)
+        if message.content_type == ContentType.STICKER:
+            incoming_message = await Sticker.create(message)
+        else:
+            incoming_message = await Bubble.create(message)
 
         if message.reply_to_message:
             for msg in messages:
