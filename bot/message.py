@@ -38,9 +38,7 @@ class IncomingMessage(ABC):
         pfp: Optional[str] = None
 
         if pfps.total_count > 0:
-            file_name = await Bubble._download_file(
-                message, pfps.photos[0][0].file_id
-            )
+            file_name = await Bubble._download_file(message, pfps.photos[0][0].file_id)
             pfp = (
                 f"""<img class="avatar" src="{full_path(file_name)}" alt="avatar" />"""
             )
@@ -53,7 +51,6 @@ class IncomingMessage(ABC):
 
 
 class Bubble(IncomingMessage):
-
     @classmethod
     def from_incoming_message(cls, message: IncomingMessage) -> "Bubble":
         self = cls()
@@ -81,10 +78,7 @@ class Bubble(IncomingMessage):
             self.pfp,
         ) = await Bubble._get_data(message)
 
-        (
-            self.text,
-            self.text_for_reply
-        ) = Bubble._set_languages(text)
+        (self.text, self.text_for_reply) = Bubble._set_languages(text)
 
         full_name = self.first_name
         if self.last_name:
@@ -189,9 +183,9 @@ class Bubble(IncomingMessage):
     @staticmethod
     def _set_languages(text: str) -> Tuple[str, str]:
         root = ET.fromstring(f"<root>{text}</root>")
-        reply_text = ET.tostring(root, encoding='unicode', method='text')
+        reply_text = ET.tostring(root, encoding="unicode", method="text")
 
-        for pre in root.findall('pre'):
+        for pre in root.findall("pre"):
             code = pre.find("code")
 
             lang = code.attrib.get("class").replace("language-", "").replace("-", " ")
@@ -200,7 +194,7 @@ class Bubble(IncomingMessage):
 
             pre.insert(0, language_name)
 
-        return ET.tostring(root, encoding='unicode')[6:-7], reply_text
+        return ET.tostring(root, encoding="unicode")[6:-7], reply_text
 
     def draw(self) -> str:
         header = ""
@@ -269,7 +263,6 @@ class Bubble(IncomingMessage):
 
 
 class Sticker(IncomingMessage):
-
     @classmethod
     def from_incoming_message(cls, message: IncomingMessage) -> "Sticker":
         self = cls()
@@ -316,9 +309,7 @@ class Sticker(IncomingMessage):
         self.message_id = message.message_id
         self.text_for_reply = "Sticker"
 
-        file_name = await Sticker._download_file(
-            message, message.sticker.file_id
-        )
+        file_name = await Sticker._download_file(message, message.sticker.file_id)
         self.image = full_path(file_name)
 
         return self

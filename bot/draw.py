@@ -40,12 +40,16 @@ def draw(speeches: list[Speech], name: str, params: Params) -> None:
     if params.theme == Theme.LIGHT:
         css_bg = fill_template(
             full_path("files/theme.css"),
-            path=full_path("files/bg_light.png"), bgcolor="white", color="black"
+            path=full_path("files/bg_light.png"),
+            bgcolor="white",
+            color="black",
         )
     else:
         css_bg = fill_template(
             full_path("files/theme.css"),
-            path=full_path("files/bg_dark.png"), bgcolor="#202123", color="white"
+            path=full_path("files/bg_dark.png"),
+            bgcolor="#202123",
+            color="white",
         )
     css_file = open_file("files/style.css")
     css = css_bg + css_fonts + css_file

@@ -32,4 +32,9 @@ class Speech:
         if type(self.messages[-1]) is Sticker:
             self.visibility = "hidden"
 
-        return fill_template(full_path("files/speech.html"), content=content, avatar=self.pfp, visibility=self.visibility)
+        return fill_template(
+            full_path("files/speech.html"),
+            content=content,
+            avatar=self.pfp,
+            visibility=self.visibility,
+        )
