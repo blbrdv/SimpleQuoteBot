@@ -174,7 +174,7 @@ class IncomingMessage(object):
         for pre in root.findall('pre'):
             code = pre.find("code")
 
-            lang = code.attrib.get("class").replace("language-", "").replace("-", "")
+            lang = code.attrib.get("class").replace("language-", "").replace("-", " ")
             language_name = ET.Element("p")
             language_name.text = lang
 
