@@ -5,6 +5,11 @@
 ### Added
 
 - Support for stickers
+- Language name to code block
+
+### Fixed
+
+- Rendering code in reply
 
 ## [0.7.0] - 2024-02-20
 
