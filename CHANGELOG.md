@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.8.0] - 2024-02-27
+
+### Added
+
+- Support for stickers
+
 ## [0.7.0] - 2024-02-20
 
 ### Fixed
@@ -90,6 +96,7 @@
 
 _Initial release._
 
+[0.8.0]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.8.0
 [0.7.0]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.7.0
 [0.6.4]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.6.4
 [0.6.3]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.6.3

@@ -1,7 +1,5 @@
-from string import Template
-
 from bot.color import get_color
-from bot.message import IncomingMessage
+from bot.message import IncomingMessage, Sticker
 from bot.utils import full_path, fill_template
 
 
@@ -24,10 +22,14 @@ class Speech:
 
     pfp: str
     messages: list[IncomingMessage]
+    visibility: str = "visible"
 
     def draw(self) -> str:
         content = ""
         for message in self.messages:
             content += message.draw()
 
-        return fill_template(full_path("files/speech.html"), content=content, avatar=self.pfp)
+        if type(self.messages[-1]) is Sticker:
+            self.visibility = "hidden"
+
+        return fill_template(full_path("files/speech.html"), content=content, avatar=self.pfp, visibility=self.visibility)
