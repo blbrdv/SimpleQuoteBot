@@ -1,3 +1,4 @@
+import os
 import logging
 import sys
 from logging.handlers import TimedRotatingFileHandler
@@ -14,8 +15,11 @@ class Logger:
 
         formater = logging.Formatter("%(name)-13s: %(levelname)-8s %(message)s")
 
+        if not os.path.exists("logs"):
+            os.makedirs("logs")
+
         file_handler = TimedRotatingFileHandler(
-            ".log", when="d", interval=1, backupCount=30
+            "logs/.log", when="d", interval=1, backupCount=30
         )
         file_handler.setFormatter(formater)
         self.logger.addHandler(file_handler)

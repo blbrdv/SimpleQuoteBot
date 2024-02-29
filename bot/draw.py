@@ -1,3 +1,5 @@
+from typing import Optional
+
 from PIL import Image, PyAccess
 
 from bot.params import Params, Theme
@@ -5,12 +7,17 @@ from bot.speech import Speech
 from bot.utils import open_file, full_path, fill_template
 
 
-def draw(speeches: list[Speech], name: str, params: Params) -> None:
+def draw(
+    speeches: list[Speech],
+    chrome_executable: Optional[str],
+    file_name: str,
+    params: Params,
+) -> None:
     from html2image import Html2Image
 
-    hti = Html2Image(
-        size=(781, 4000),
-        custom_flags=[
+    hti_params = {
+        "size": (781, 4000),
+        "custom_flags": [
             "--disable-gpu",
             "--no-sandbox",
             "--disable-setuid-sandbox",
@@ -18,7 +25,12 @@ def draw(speeches: list[Speech], name: str, params: Params) -> None:
             "--hide-scrollbars",
             "--log-level=3",
         ],
-    )
+    }
+
+    if chrome_executable:
+        hti_params["browser_executable"] = "/opt/google/chrome/chrome"
+
+    hti = Html2Image(**hti_params)
 
     content = ""
     for speech in speeches:
@@ -57,9 +69,9 @@ def draw(speeches: list[Speech], name: str, params: Params) -> None:
         css_anon = open_file("files/anon.css")
         css += css_anon
 
-    hti.screenshot(html_str=html, css_str=css, save_as=name)
+    hti.screenshot(html_str=html, css_str=css, save_as=file_name)
 
-    im = Image.open(name)
+    im = Image.open(file_name)
     pixels: PyAccess = im.load()
     width, height = im.size
 
@@ -81,4 +93,4 @@ def draw(speeches: list[Speech], name: str, params: Params) -> None:
 
     canvas = Image.new("RGBA", (real_width, real_height), (0, 0, 0, 0))
     canvas.paste(im)
-    canvas.save(name)
+    canvas.save(file_name)

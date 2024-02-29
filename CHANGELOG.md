@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.8.1] - 2024-02-29
+
+### Added
+
+- Docker support (broken chrome rendering)
+
+### Fixed
+
+- Drawing images in replies
+
 ## [0.8.0] - 2024-02-27
 
 ### Added
@@ -83,7 +93,7 @@
 
 ### Added
 
-- Added replys
+- Added replies
 
 ## [0.2.1] - 2024-01-25
 
@@ -101,6 +111,7 @@
 
 _Initial release._
 
+[0.8.1]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.8.1
 [0.8.0]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.8.0
 [0.7.0]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.7.0
 [0.6.4]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.6.4

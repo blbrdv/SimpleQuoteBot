@@ -3,10 +3,20 @@
 
 A simple TG quote bot for generating quote screenshots from forwarded to private chat messages.
 
-## Current limitations:
+## Features:
+
+- Authentic rendering messages
+  - text
+  - images
+  - stickers
+  - rest in WIP
+- Themes
+- Anonymous mode
+- Docker support (currently broken)
+
+### Limitations:
 
 1. No avatars for private profiles
-2. Only text and image messages (rest is in TODO)
 
 ## Usage
 
@@ -38,6 +48,12 @@ A simple TG quote bot for generating quote screenshots from forwarded to private
 - pip
 - black
 - env `BOT_TOKEN` - telegram bot token from Bot Father
+
+### Or work with docker
+
+1. Rename `.env.example` to `.env`
+2. Put values to this file
+3. Run `docker compose up -d`
 
 ## License
 Project licensed under [MIT License](/LICENSES/LICENSE).
