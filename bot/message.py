@@ -94,9 +94,7 @@ class Bubble(IncomingMessage):
         if message.content_type == ContentType.TEXT:
             pass
         elif message.content_type == ContentType.PHOTO:
-            file_name = await Bubble._download_file(
-                message, message.photo[-1].file_id
-            )
+            file_name = await Bubble._download_file(message, message.photo[-1].file_id)
             self.photo = full_path(file_name)
         else:
             self.unsupported_type = True

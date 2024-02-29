@@ -7,7 +7,12 @@ from bot.speech import Speech
 from bot.utils import open_file, full_path, fill_template
 
 
-def draw(speeches: list[Speech], chrome_executable: Optional[str], file_name: str, params: Params) -> None:
+def draw(
+    speeches: list[Speech],
+    chrome_executable: Optional[str],
+    file_name: str,
+    params: Params,
+) -> None:
     from html2image import Html2Image
 
     hti_params = {
