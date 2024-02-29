@@ -345,7 +345,7 @@ class Sticker(IncomingMessage):
                 )
             else:
                 bubble = Bubble.from_incoming_message(self.reply)
-                content= bubble.text_for_reply
+                content = bubble.text_for_reply
                 image = ""
                 if bubble.photo:
                     image = f"""<img class="preview" src="{bubble.photo}" />"""
