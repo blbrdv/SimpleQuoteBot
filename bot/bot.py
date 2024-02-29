@@ -25,6 +25,7 @@ dispatcher = Dispatcher()
 tgbot = Bot(getenv("BOT_TOKEN"), parse_mode=ParseMode.MARKDOWN)
 logger = Logger("bot")
 history = {}
+chrome_executable: Optional[str] = None
 
 
 @dispatcher.message(CommandStart())
@@ -111,7 +112,7 @@ async def _on_quote(q_message: Message) -> None:
     file_name = f"{q_message.chat.id}.png"
 
     try:
-        draw(speeches, file_name, params)
+        draw(speeches, chrome_executable, file_name, params)
         logger.debug(f"Picture {file_name} drawn")
         await q_message.reply_photo(FSInputFile(file_name))
         logger.debug(f"Picture {file_name} send")
@@ -147,4 +148,7 @@ async def _start_bot() -> None:
 
 
 def main() -> None:
+    global chrome_executable
+    if len(sys.argv) > 1:
+        chrome_executable = sys.argv[1]
     asyncio.run(_start_bot())

@@ -90,16 +90,16 @@ class Bubble(IncomingMessage):
             initials += self.last_name[0]
         self.initials = initials
 
-        match message.content_type:
-            case ContentType.TEXT:
-                pass
-            case ContentType.PHOTO:
-                file_name = await Bubble._download_file(
-                    message, message.photo[-1].file_id
-                )
-                self.photo = full_path(file_name)
-            case _:
-                self.unsupported_type = True
+        # no match cuz python version in docker < 3.10
+        if message.content_type == ContentType.TEXT:
+            pass
+        elif message.content_type == ContentType.PHOTO:
+            file_name = await Bubble._download_file(
+                message, message.photo[-1].file_id
+            )
+            self.photo = full_path(file_name)
+        else:
+            self.unsupported_type = True
 
         return self
 
