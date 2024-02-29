@@ -5,7 +5,7 @@ A simple TG quote bot for generating quote screenshots from forwarded to private
 
 ## Features:
 
-- Drawing messages
+- Authentic rendering messages
   - text
   - images
   - stickers

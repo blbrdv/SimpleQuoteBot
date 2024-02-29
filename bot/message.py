@@ -20,6 +20,8 @@ class IncomingMessage(ABC):
     media_group_count: int = 0
     full_name: str
     text_for_reply: str
+    image: str
+    photo: Optional[str] = None
 
     @staticmethod
     async def _download_file(message: Message, file_id: str) -> str:
@@ -51,6 +53,22 @@ class IncomingMessage(ABC):
 
 
 class Bubble(IncomingMessage):
+    message_id: int
+    author_id: int
+    first_name: str
+    last_name: Optional[str] = None
+    full_name: str
+    initials: str
+    text: str
+    text_for_reply: str
+    photo: Optional[str] = None
+    media_group_count: int = 0
+    reply: Optional[IncomingMessage] = None
+    time: str
+    pfp: Optional[str] = None
+    is_first: bool = False
+    unsupported_type: bool = False
+
     @classmethod
     def from_incoming_message(cls, message: IncomingMessage) -> "Bubble":
         self = cls()
@@ -62,6 +80,7 @@ class Bubble(IncomingMessage):
         self.pfp = message.pfp
         self.full_name = message.full_name
         self.text_for_reply = message.text_for_reply
+        self.photo = message.photo
 
         return self
 
@@ -100,22 +119,6 @@ class Bubble(IncomingMessage):
             self.unsupported_type = True
 
         return self
-
-    message_id: int
-    author_id: int
-    first_name: str
-    last_name: Optional[str] = None
-    full_name: str
-    initials: str
-    text: str
-    text_for_reply: str
-    photo: Optional[str] = None
-    media_group_count: int = 0
-    reply: Optional[IncomingMessage] = None
-    time: str
-    pfp: Optional[str] = None
-    is_first: bool = False
-    unsupported_type: bool = False
 
     @staticmethod
     async def _get_data(
@@ -203,12 +206,13 @@ class Bubble(IncomingMessage):
         if self.reply:
             if type(self.reply) is Sticker:
                 sticker = Sticker.from_incoming_message(self.reply)
+                image = f"""<img class="preview" src="{sticker.image}" />"""
                 color = get_color(sticker.author_id).primary
                 reply = fill_template(
                     full_path("files/reply.html"),
-                    image="",
+                    image=image,
                     header=sticker.full_name,
-                    content="Sticker",
+                    content=sticker.text_for_reply,
                     color=color.hex,
                     colortext="black",
                     r=color.red,
@@ -221,7 +225,7 @@ class Bubble(IncomingMessage):
                 content = bubble.text_for_reply
                 image = ""
                 if bubble.photo:
-                    image = f"""<img class="preview" src="{self.photo}" />"""
+                    image = f"""<img class="preview" src="{bubble.photo}" />"""
                     if content == "":
                         content = "Photo"
 
@@ -261,6 +265,15 @@ class Bubble(IncomingMessage):
 
 
 class Sticker(IncomingMessage):
+    author_id: int
+    message_id: int
+    full_name: str
+    image: str
+    reply: Optional[IncomingMessage] = None
+    pfp: str
+    initials: str
+    media_group_count: int = 0
+
     @classmethod
     def from_incoming_message(cls, message: IncomingMessage) -> "Sticker":
         self = cls()
@@ -272,6 +285,7 @@ class Sticker(IncomingMessage):
         self.pfp = message.pfp
         self.full_name = message.full_name
         self.text_for_reply = message.text_for_reply
+        self.image = message.image
 
         return self
 
@@ -305,30 +319,22 @@ class Sticker(IncomingMessage):
         self.pfp = pfp
         self.initials = initials
         self.message_id = message.message_id
-        self.text_for_reply = "Sticker"
+        self.text_for_reply = f"{message.sticker.emoji} Sticker"
 
         file_name = await Sticker._download_file(message, message.sticker.file_id)
         self.image = full_path(file_name)
 
         return self
 
-    author_id: int
-    message_id: int
-    full_name: str
-    image: str
-    reply: Optional[IncomingMessage] = None
-    pfp: str
-    initials: str
-    media_group_count: int = 0
-
     def draw(self) -> str:
         reply = ""
         if self.reply:
             if type(self.reply) is Sticker:
                 sticker = Sticker.from_incoming_message(self.reply)
+                image = f"""<img class="preview" src="{sticker.image}" />"""
                 reply = fill_template(
                     full_path("files/reply.html"),
-                    image="",
+                    image=image,
                     header=sticker.full_name,
                     content=sticker.text_for_reply,
                     color="white",
@@ -339,13 +345,20 @@ class Sticker(IncomingMessage):
                 )
             else:
                 bubble = Bubble.from_incoming_message(self.reply)
+                content= bubble.text_for_reply
+                image = ""
+                if bubble.photo:
+                    image = f"""<img class="preview" src="{bubble.photo}" />"""
+                    if content == "":
+                        content = "Photo"
+
                 reply = fill_template(
                     full_path("files/reply.html"),
-                    image="",
+                    image=image,
                     header=bubble.full_name,
-                    content=bubble.text_for_reply,
+                    content=content,
                     color="white",
-                    colortext="black",
+                    colortext="white",
                     r="255",
                     g="255",
                     b="255",
