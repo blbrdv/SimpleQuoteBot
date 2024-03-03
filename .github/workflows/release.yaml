@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - run: echo "image_version=${ ${{ github.ref }}:1 }" >> $GITHUB_ENV
+      - run: echo "image_version=${${{ github.ref }}:11}" >> $GITHUB_ENV
 
       - name: Github release
         uses: docker://antonyurchenko/git-release:latest
