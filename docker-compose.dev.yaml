@@ -2,7 +2,8 @@ version: '3'
 
 services:
   bot:
-    image: simple-quote-bot:latest
+    image: simple-quote-bot
+    build: .
     volumes:
       - ./logs:/home/logs
     env_file: .env
