@@ -2,6 +2,10 @@
 
 ## [0.8.2] - 2024-03-03
 
+### Added
+
+- Full CI/CD with release
+
 ### Fixed
 
 - Docker support
