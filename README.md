@@ -12,7 +12,7 @@ A simple TG quote bot for generating quote screenshots from forwarded to private
   - rest in WIP
 - Themes
 - Anonymous mode
-- Docker support (currently broken)
+- Docker support
 
 ### Limitations:
 
