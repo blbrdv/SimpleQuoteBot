@@ -46,15 +46,24 @@ jobs:
       #     passphrase: ${{ secrets.SERVER_PASSPHRASE }}
       #     privateKey: ${{ secrets.SERVER_PRIVATE_KEY}}
 
+      # - name: Stop
+      #   uses: appleboy/ssh-action@v1.0.3
+      #   with:
+      #     host: ${{ secrets.SERVER_IP }}
+      #     username: ${{ secrets.SERVER_USERNAME }}
+      #     key: ${{ secrets.SERVER_PRIVATE_KEY }}
+      #     passphrase: ${{ secrets.SERVER_PASSPHRASE }}
+      #     port: ${{ secrets.SERVER_PORT }}
+      #     script: cd /SimpleQuoteBot && docker compose down
+
       - name: Stop
-        uses: appleboy/ssh-action@v1.0.3
+        uses: fifsky/ssh-action@master
         with:
+          command: cd /SimpleQuoteBot && docker compose down
           host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USERNAME }}
+          user: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SERVER_PASSPHRASE }}
-          port: ${{ secrets.SERVER_PORT }}
-          script: cd /SimpleQuoteBot && docker compose down
+          pass: ${{ secrets.SERVER_PASSPHRASE }}
 
       - name: Release
         uses: appleboy/scp-action@v0.1.7
