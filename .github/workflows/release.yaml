@@ -15,14 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - run: |
-          echo "${{ github.ref }}" | sed 's|refs/tags/v||' | (read h; echo "image_version=${h}") >> $GITHUB_ENV
-          echo ${{ env.image_version }}
-
-      - name: Github release
-        uses: docker://antonyurchenko/git-release:latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: echo "${{ github.ref }}" | sed 's|refs/tags/v||' | (read h; echo "image_version=${h}") >> $GITHUB_ENV
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -88,3 +81,8 @@ jobs:
       #     password: ${{ secrets.SERVER_PASSWORD }}
       #     port: ${{ secrets.SERVER_PORT }}
       #     script: cd /SimpleQuoteBot && docker compose up -d
+      
+      - name: Github release
+        uses: docker://antonyurchenko/git-release:latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
