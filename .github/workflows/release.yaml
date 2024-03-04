@@ -48,8 +48,8 @@ jobs:
         with:
           command: cd /SimpleQuoteBot && docker compose down
           host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          password: ${{ secrets.SERVER_PASSWORD }}
+          passphrase: ${{ secrets.SERVER_PASSPHRASE }}
+          privateKey: ${{ secrets.SERVER_PRIVATE_KEY}}
 
       # - name: Stop
       #   uses: appleboy/ssh-action@v1.0.3
@@ -77,7 +77,8 @@ jobs:
           command: cd /SimpleQuoteBot && docker compose up -d
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USERNAME }}
-          password: ${{ secrets.SERVER_PASSWORD }}
+          passphrase: ${{ secrets.SERVER_PASSPHRASE }}
+          privateKey: ${{ secrets.SERVER_PRIVATE_KEY}}
 
       # - name: Run
       #   uses: appleboy/ssh-action@v1.0.3
