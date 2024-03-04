@@ -36,22 +36,22 @@ jobs:
           push: true
           tags: blbrdv/simple-quote-bot:latest,blbrdv/simple-quote-bot:${{ env.image_version }}
 
-      - name: Stop
-        uses: garygrossgarten/github-action-ssh@release
-        with:
-          command: cd /SimpleQuoteBot && docker compose down
-          host: ${{ secrets.SERVER_IP }}
-          passphrase: ${{ secrets.SERVER_PASSPHRASE }}
-          privateKey: ${{ secrets.SERVER_PRIVATE_KEY}}
-
       # - name: Stop
-      #   uses: appleboy/ssh-action@v1.0.3
+      #   uses: garygrossgarten/github-action-ssh@release
       #   with:
+      #     command: cd /SimpleQuoteBot && docker compose down
       #     host: ${{ secrets.SERVER_IP }}
-      #     username: ${{ secrets.SERVER_USERNAME }}
-      #     password: ${{ secrets.SERVER_PASSWORD }}
-      #     port: ${{ secrets.SERVER_PORT }}
-      #     script: cd /SimpleQuoteBot && docker compose down
+      #     passphrase: ${{ secrets.SERVER_PASSPHRASE }}
+      #     privateKey: ${{ secrets.SERVER_PRIVATE_KEY}}
+
+      - name: Stop
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: cd /SimpleQuoteBot && docker compose down
 
       - name: Release
         uses: appleboy/scp-action@v0.1.7
@@ -64,23 +64,23 @@ jobs:
           target: /SimpleQuoteBot
       
       
-      - name: Run
-        uses: garygrossgarten/github-action-ssh@release
-        with:
-          command: cd /SimpleQuoteBot && docker compose up -d
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          passphrase: ${{ secrets.SERVER_PASSPHRASE }}
-          privateKey: ${{ secrets.SERVER_PRIVATE_KEY}}
-
       # - name: Run
-      #   uses: appleboy/ssh-action@v1.0.3
+      #   uses: garygrossgarten/github-action-ssh@release
       #   with:
+      #     command: cd /SimpleQuoteBot && docker compose up -d
       #     host: ${{ secrets.SERVER_IP }}
       #     username: ${{ secrets.SERVER_USERNAME }}
-      #     password: ${{ secrets.SERVER_PASSWORD }}
-      #     port: ${{ secrets.SERVER_PORT }}
-      #     script: cd /SimpleQuoteBot && docker compose up -d
+      #     passphrase: ${{ secrets.SERVER_PASSPHRASE }}
+      #     privateKey: ${{ secrets.SERVER_PRIVATE_KEY}}
+
+      - name: Run
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: cd /SimpleQuoteBot && docker compose up -d
       
       - name: Github release
         uses: docker://antonyurchenko/git-release:latest
