@@ -35,6 +35,8 @@ jobs:
           context: .
           push: true
           tags: blbrdv/simple-quote-bot:latest,blbrdv/simple-quote-bot:${{ env.image_version }}
+          cache-from: type=registry,ref=blbrdv/simple-quote-bot:latest
+          cache-to: type=inline
 
       # - name: Stop
       #   uses: garygrossgarten/github-action-ssh@release
