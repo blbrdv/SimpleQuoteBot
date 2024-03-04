@@ -50,6 +50,7 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SERVER_PASSPHRASE }}
           port: ${{ secrets.SERVER_PORT }}
           script: cd /SimpleQuoteBot && docker compose down
 
@@ -79,6 +80,7 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SERVER_PASSPHRASE }}
           port: ${{ secrets.SERVER_PORT }}
           script: cd /SimpleQuoteBot && docker compose up -d
       
