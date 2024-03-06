@@ -41,11 +41,7 @@ jobs:
       - name: Release
         uses: fifsky/ssh-action@master
         with:
-          command: |
-            cd /SimpleQuoteBot 
-            git pull
-            docker compose pull
-            docker compose up -d
+          command: cd /SimpleQuoteBot && git pull && docker compose pull && docker compose up -d
           host: ${{ secrets.SERVER_IP }}
           user: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_PRIVATE_KEY }}
