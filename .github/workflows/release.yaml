@@ -46,7 +46,7 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           key: ${{ secrets.SERVER_PRIVATE_KEY}}
           command: |
-            cd /SimpleQuoteBot
+            cd ~/SimpleQuoteBot
             git pull
             docker compose pull
             docker compose up -d
