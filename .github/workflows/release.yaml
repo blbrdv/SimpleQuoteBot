@@ -50,3 +50,8 @@ jobs:
             git pull
             docker compose pull
             docker compose up -d
+
+      - name: Github release
+        uses: docker://antonyurchenko/git-release:latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
