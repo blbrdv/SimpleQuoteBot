@@ -43,11 +43,10 @@ jobs:
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SERVER_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT }}
-          passphrase: ${{ secrets.SERVER_PASSPHRASE }}
+          password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             cd /SimpleQuoteBot 
             git pull
-            docker compose pull
-            docker compose up -d
+            docker-compose pull
+            docker-compose up -d
