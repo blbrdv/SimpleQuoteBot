@@ -45,6 +45,8 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           port: ${{ secrets.SERVER_PORT }}
           password: ${{ secrets.SERVER_PASSWORD }}
+          key: ${{ secrets.SERVER_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SERVER_PASSPHRASE }}
           script: |
             cd /SimpleQuoteBot 
             git pull
