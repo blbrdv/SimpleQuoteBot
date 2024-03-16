@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.8.3] - 2024-03-16
+
+### Fixed
+
+- Multistage docker
+
 ## [0.8.2] - 2024-03-03
 
 ### Added
@@ -121,6 +127,7 @@
 
 _Initial release._
 
+[0.8.3]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.8.3
 [0.8.2]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.8.2
 [0.8.1]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.8.1
 [0.8.0]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.8.0
