@@ -179,12 +179,18 @@ class Bubble(IncomingMessage):
 
             pfp = await Bubble._get_avatar(message, user_id)
 
+        message_text = message.html_text
+        message_text = message_text.replace("\r\n", "<br/>")
+        message_text = message_text.replace("\n", "<br/>")
+        message_text = message_text.replace("\r", "<br/>")
+        message_text = message_text.strip()
+
         return (
             message_id,
             user_id,
             first_name,
             last_name,
-            message.html_text,
+            message_text,
             message_datetime.replace(tzinfo=timezone.utc).strftime("%H:%M"),
             pfp,
         )
