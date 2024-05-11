@@ -145,6 +145,14 @@ class Bubble(IncomingMessage):
                 if message.forward_origin.type == MessageOriginType.CHANNEL:
                     user_id = message.forward_origin.chat.id
                     first_name = message.forward_origin.chat.full_name
+                elif message.forward_origin.type == MessageOriginType.CHAT:
+                    user_id = message.forward_from_chat.id
+                    name = message.forward_from_chat.full_name.split()
+                    first_name = name[0]
+                    if name[1:] is not None and name[1:] != "":
+                        last_name = " ".join(name[1:])
+
+                    # TODO: chat pfp
                 else:
                     user_id = message.forward_origin.sender_user.id
                     first_name = message.forward_origin.sender_user.first_name
@@ -171,12 +179,18 @@ class Bubble(IncomingMessage):
 
             pfp = await Bubble._get_avatar(message, user_id)
 
+        message_text = message.html_text
+        message_text = message_text.replace("\r\n", "<br/>")
+        message_text = message_text.replace("\n", "<br/>")
+        message_text = message_text.replace("\r", "<br/>")
+        message_text = message_text.strip()
+
         return (
             message_id,
             user_id,
             first_name,
             last_name,
-            message.html_text,
+            message_text,
             message_datetime.replace(tzinfo=timezone.utc).strftime("%H:%M"),
             pfp,
         )

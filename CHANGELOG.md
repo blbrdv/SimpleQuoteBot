@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.4] - 2024-05-11
+
+### Fixed
+
+- Chat user
+- Message text new lines
+
 ## [0.8.3] - 2024-03-16
 
 ### Fixed
@@ -127,6 +134,7 @@
 
 _Initial release._
 
+[0.8.4]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.8.4
 [0.8.3]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.8.3
 [0.8.2]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.8.2
 [0.8.1]: https://github.com/blbrdv/SimpleQuoteBot/releases/tag/v0.8.1
